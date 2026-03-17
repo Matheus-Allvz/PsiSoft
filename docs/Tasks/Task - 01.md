@@ -1,4 +1,3 @@
-
 **Área:  Clínica de psicologia** 
 
 #### Escopo: 
