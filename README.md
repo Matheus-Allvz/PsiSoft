@@ -5,6 +5,6 @@ Este projeto consiste no desenvolvimento de uma plataforma **Software as a Servi
 
 ## 🎯 Escopo do Sistema
 O sistema é focado em resolver o "baseline" operacional do consultório (Necessidades Dorsais) e oferecer diferenciais competitivos.
-
 ---
+
 *Projeto acadêmico em desenvolvimento para a disciplina de Arquitetura e Desenho de Software (CIC1060) - PUC-GO.*
