@@ -22,16 +22,18 @@ Vocês deverão fazer um **levantamento de requisitos**. Para isso podem executa
 > [!attention] 
 > Data da primeira entrega 06/04 
 
-##### Entrega dos seguintes documentos: 
+##### Planejamento - Entrega dos seguintes documentos: 
 
-- [ ] Descrição das entrevistas com identificação do entrevistado 
-- [ ] Síntese dos Requisitos das Entrevistas 
-- [ ] Entrega do questionário preenchido 
-- [ ] Síntese dos Requisitos dos Questionários  
-- [ ] Síntese dos Requisitos do Sistema análogo 
-- [ ] Lista de requisitos –  Geral 
-- [ ] Matriz de rastreabilidade – Requisitos e fonte de requisitos 
+| Tarefa | Pessoas | Status |
+| :--- | :--- | :--- |
+| Fazer entrevista | Nicole & Pedro | Não iniciada |
+| Elaborar entrevista | Marcos & Lavinia | Não iniciada |
+| Fazer ata de entrevista | Nicole & Pedro | Não iniciada |
+| Especificar os requisitos de acordo com a entrevista | Marcos & Lavinia | Não iniciada |
+| Elaborar o questionário (duas pessoas) | Daniel & Rafael | Não iniciada |
+| Especificar os requisitos do do questionário | Daniel & Rafael | Não iniciada |
+| Especificar requisitos do sistema análogo | Matheus & Davi | Não iniciada |
+| Listar todos os requisitos | Todos | Não iniciada |
+| Fazer uma matriz de rastreabilidade | Matheus & Davi | Não iniciada |
 
-**Observação:**  todos os artefatos devem ser armazenados em uma ferramenta de controle de versões como Github, Git, Bitbucket ou Gitlab 
-
-Cada grupo deverá investigar e analisar um sistema análogo diferente de outro grupo – informar à professora o nome do sistema.
+**Observação:**  Escolhemos como ferramenta o GitHub e o Google Drive. Sobre o sistema análogo, foi determinado o "Amplimed", ele é um sistema para gestão de consultórios e clínicas.
