@@ -24,16 +24,17 @@ Vocês deverão fazer um **levantamento de requisitos**. Para isso podem executa
 
 ##### Planejamento - Entrega dos seguintes documentos: 
 
-| Tarefa | Pessoas | Status |
-| :--- | :--- | :--- |
-| Fazer entrevista | Nicole & Pedro | Não iniciada |
-| Elaborar entrevista | Marcos & Lavinia | Não iniciada |
-| Fazer ata de entrevista | Nicole & Pedro | Não iniciada |
-| Especificar os requisitos de acordo com a entrevista | Marcos & Lavinia | Não iniciada |
-| Elaborar o questionário (duas pessoas) | Daniel & Rafael | Não iniciada |
-| Especificar os requisitos do do questionário | Daniel & Rafael | Não iniciada |
-| Especificar requisitos do sistema análogo | Matheus & Davi | Não iniciada |
-| Listar todos os requisitos | Todos | Não iniciada |
-| Fazer uma matriz de rastreabilidade | Matheus & Davi | Não iniciada |
+| Tarefa                                                 | Pessoas          | Status       |
+| :----------------------------------------------------- | :--------------- | :----------- |
+| Levantamento de Normas, Legislações e Padrões          |                  | Não iniciada |
+| Elaborar roteiro de entrevistas                        | Marcos & Lavinia | Não iniciada |
+| Realizar as entrevistas                                | Nicole & Pedro   | Não iniciada |
+| Fazer ata e transcrição das entrevistas                | Nicole & Pedro   | Não iniciada |
+| Especificar requisitos (Entrevistas)                   | Marcos & Lavinia | Não iniciada |
+| Elaborar o questionário                                | Daniel & Rafael  | Não iniciada |
+| Especificar requisitos (Questionário)                  | Daniel & Rafael  | Não iniciada |
+| Analisar sistema análogo (Amplimed)                    | Matheus & Davi   | Não iniciada |
+| Lista de Requisitos Geral (Consolidada)                | Todos            | Não iniciada |
+| Elaborar a matriz de rastreabilidade                   | Matheus & Davi   | Não iniciada |
 
 **Observação:**  Escolhemos como ferramenta o GitHub e o Google Drive. Sobre o sistema análogo, foi determinado o "Amplimed", ele é um sistema para gestão de consultórios e clínicas.
