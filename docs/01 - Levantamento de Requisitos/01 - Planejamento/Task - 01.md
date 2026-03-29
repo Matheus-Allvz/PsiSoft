@@ -33,7 +33,7 @@ Vocês deverão fazer um **levantamento de requisitos**. Para isso podem executa
 | Especificar requisitos (Entrevistas)                   | Marcos & Lavinia | Não iniciada |
 | Elaborar o questionário                                | Daniel & Rafael  | Não iniciada |
 | Especificar requisitos (Questionário)                  | Daniel & Rafael  | Não iniciada |
-| Analisar sistema análogo (Amplimed)                    | Matheus & Davi   | Não iniciada |
+| Analisar sistema análogo (Amplimed)                    | Matheus & Davi   | Concluída    |
 | Lista de Requisitos Geral (Consolidada)                | Todos            | Não iniciada |
 | Elaborar a matriz de rastreabilidade                   | Matheus & Davi   | Não iniciada |
 
