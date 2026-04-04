@@ -27,10 +27,10 @@ Vocês deverão fazer um **levantamento de requisitos**. Para isso podem executa
 | Tarefa                                                 | Pessoas          | Status       |
 | :----------------------------------------------------- | :--------------- | :----------- |
 | Levantamento de Normas, Legislações e Padrões          |                  | Não iniciada |
-| Elaborar roteiro de entrevistas                        | Marcos & Lavinia | Não iniciada |
-| Realizar as entrevistas                                | Nicole & Pedro   | Não iniciada |
-| Fazer ata e transcrição das entrevistas                | Nicole & Pedro   | Não iniciada |
-| Especificar requisitos (Entrevistas)                   | Marcos & Lavinia | Não iniciada |
+| Elaborar roteiro de entrevistas                        | Marcos & Lavinia | Concluída    |
+| Realizar as entrevistas                                | Nicole & Pedro   | Concluída    |
+| Fazer ata e transcrição das entrevistas                | Nicole & Pedro   | Concluída    |
+| Especificar requisitos (Entrevistas)                   | Marcos & Lavinia | Concluída    |
 | Elaborar o questionário                                | Daniel & Rafael  | Não iniciada |
 | Especificar requisitos (Questionário)                  | Daniel & Rafael  | Não iniciada |
 | Analisar sistema análogo (Amplimed)                    | Matheus & Davi   | Concluída    |
