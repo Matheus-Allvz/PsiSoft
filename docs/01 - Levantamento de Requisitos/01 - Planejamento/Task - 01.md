@@ -31,8 +31,8 @@ Vocês deverão fazer um **levantamento de requisitos**. Para isso podem executa
 | Realizar as entrevistas                                | Nicole & Pedro   | Concluída    |
 | Fazer ata e transcrição das entrevistas                | Nicole & Pedro   | Concluída    |
 | Especificar requisitos (Entrevistas)                   | Marcos & Lavinia | Concluída    |
-| Elaborar o questionário                                | Daniel & Rafael  | Não iniciada |
-| Especificar requisitos (Questionário)                  | Daniel & Rafael  | Não iniciada |
+| Elaborar o questionário                                | Daniel & Rafael  | Concluída    |
+| Especificar requisitos (Questionário)                  | Daniel & Rafael  | Concluída    |
 | Analisar sistema análogo (Amplimed)                    | Matheus & Davi   | Concluída    |
 | Lista de Requisitos Geral (Consolidada)                | Todos            | Não iniciada |
 | Elaborar a matriz de rastreabilidade                   | Matheus & Davi   | Não iniciada |
