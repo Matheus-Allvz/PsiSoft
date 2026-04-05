@@ -1,4 +1,4 @@
-# Questionário - Experiência do Paciente
+# Entrevista - Experiência do Paciente
 
 ## 1. Comunicação com a clínica
 **Pergunta:**  
