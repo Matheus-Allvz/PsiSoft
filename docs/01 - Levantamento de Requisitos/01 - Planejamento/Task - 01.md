@@ -26,7 +26,7 @@ Vocês deverão fazer um **levantamento de requisitos**. Para isso podem executa
 
 | Tarefa                                                 | Pessoas          | Status       |
 | :----------------------------------------------------- | :--------------- | :----------- |
-| Levantamento de Normas, Legislações e Padrões          |                  | Não iniciada |
+| Levantamento de Normas, Legislações e Padrões          |                  | Concluída    |
 | Elaborar roteiro de entrevistas                        | Marcos & Lavinia | Concluída    |
 | Realizar as entrevistas                                | Nicole & Pedro   | Concluída    |
 | Fazer ata e transcrição das entrevistas                | Nicole & Pedro   | Concluída    |
