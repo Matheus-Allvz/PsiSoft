@@ -40,7 +40,7 @@ No caso de consultas online (telepsicologia), como você prefere receber os link
 **Pergunta:**  
 Qual é o seu canal de preferência para receber lembretes automáticos de consulta?
 
-- ( ) WhatsApp  
+- ( X ) WhatsApp  
 - ( ) E-mail  
 - ( ) SMS  
 
