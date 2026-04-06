@@ -30,6 +30,8 @@
 | **RNF-03** | **Disponibilidade e Backup:** Garantir rotinas automáticas de backup e alta disponibilidade para evitar perda de registos obrigatórios.                         | Essencial      | ISO 27002 (8.13); Questionário Psicóloga    |
 | **RNF-04** | **Usabilidade (Foco em Cliques):** Interface intuitiva com o mínimo de cliques para o registo diário de prontuários, visando reduzir a resistência operacional. | Essencial      | Questionário Psicóloga                      |
 | **RNF-05** | **Responsividade:** O sistema deve ser totalmente funcional em dispositivos móveis (tablets e smartphones).                                                     | Essencial      | Questionário Psicóloga; Requisitos Paciente |
+| **RNF-06** | **Transcrição com IA:** Após uma sessão acontecer, o sistema deve transcrever automaticamente e gerar o prontuário da sessão.                                   | Desejável      | Entrevista Psicóloga                        |
+| **RNF-07** | **Conformidade com o CFP:** A estrutura do prontuário eletrônico deve seguir rigorosamente as informações obrigatórias exigidas pela Resolução CFP n° 001/2009. | Essencial      | Resolução CFP 001/2009                      |
 
 ## Regras de Negócio e Restrições (RN e REST)
 
