@@ -34,3 +34,7 @@ Este documento detalha os requisitos funcionais e não funcionais levantados a p
 * **RNF04 - Interoperabilidade com WhatsApp:** O sistema deve coexistir com o WhatsApp para comunicações diretas e envio de links de reunião (Google Meet), respeitando a preferência do usuário por um contato mais "humano".
 * **RNF05 - Controle de Acesso Restrito:** O sistema não deve permitir o uso por pessoas que não sejam pacientes ativos, evitando que as ferramentas terapêuticas sejam utilizadas sem supervisão profissional.
 * **RNF06 - Disponibilidade de Lembretes:** Os lembretes automáticos devem ser enviados preferencialmente via WhatsApp ou integração que garanta a visualização imediata.
+
+* **RNF07 - Transcrição com IA:** Após uma sessão acontecer, o sistema deve transcrever automaticamente e gerar o prontuário da sessão.
+
+*  **RNF08 - Conformidade com o CFP:** A estrutura do prontuário eletrônico deve seguir rigorosamente as informações obrigatórias exigidas pela Resolução CFP n° 001/2009.
