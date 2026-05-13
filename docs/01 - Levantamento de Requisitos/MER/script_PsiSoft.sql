@@ -9,7 +9,7 @@ CREATE TABLE Usuario (
     status BOOLEAN NOT NULL
 );
 
-CREATE TABLE Responsavel_Legal (
+CREATE TABLE Responsavel (
     id INT PRIMARY KEY AUTO_INCREMENT,
     nome VARCHAR(100) NOT NULL,
     cpf VARCHAR(14) UNIQUE NOT NULL,
@@ -62,9 +62,9 @@ CREATE TABLE Paciente (
     telefone VARCHAR(15),
     contato_wpp VARCHAR(15),
     status_ativo BOOLEAN,
-    fk_Responsavel_Legal_id INT,
+    fk_Responsavel_id INT,
     fk_Prontuario_id INT,
-    FOREIGN KEY (fk_Responsavel_Legal_id) REFERENCES Responsavel_Legal(id),
+    FOREIGN KEY (fk_Responsavel_id) REFERENCES Responsavel(id),
     FOREIGN KEY (fk_Prontuario_id) REFERENCES Prontuario(id)
 );
 
