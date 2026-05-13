@@ -12,17 +12,18 @@ CREATE TABLE Usuario (
 CREATE TABLE Responsavel (
     id INT PRIMARY KEY AUTO_INCREMENT,
     nome VARCHAR(100) NOT NULL,
-    cpf VARCHAR(14) UNIQUE NOT NULL,
-    parentesco VARCHAR(50),
+    cpf VARCHAR(11) UNIQUE NOT NULL,
+    parentesco VARCHAR(20),
     contato_wpp VARCHAR(15)
 );
 
 CREATE TABLE Prontuario (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    data_abertura DATE NOT NULL
+    data_abertura DATE NOT NULL,
+    status BOOLEAN
 );
 
-CREATE TABLE Transcricao_IA (
+CREATE TABLE Transcricao(
     id INT PRIMARY KEY AUTO_INCREMENT,
     audio_path VARCHAR(255),
     texto_ia TEXT
@@ -55,17 +56,29 @@ CREATE TABLE Contador (
 CREATE TABLE Paciente (
     id INT PRIMARY KEY AUTO_INCREMENT,
     nome VARCHAR(100) NOT NULL,
-    cpf VARCHAR(14) UNIQUE NOT NULL,
-    data_nasc DATE,
-    genero VARCHAR(20),
+    email VARCHAR(100),
+    senha_hash VARCHAR(255),
+    pin_biometria VARCHAR(255),
+    cpf VARCHAR(11) UNIQUE NOT NULL,
+    data_nasc DATE NOT NULL,
+    status_menor BOOLEAN,
+    genero ENUM('Masculino', 'Feminino', 'Não-binário', 'Prefiro não informar'),
     endereco VARCHAR(255),
-    telefone VARCHAR(15),
-    contato_wpp VARCHAR(15),
-    status_ativo BOOLEAN,
-    fk_Responsavel_id INT,
-    fk_Prontuario_id INT,
-    FOREIGN KEY (fk_Responsavel_id) REFERENCES Responsavel(id),
-    FOREIGN KEY (fk_Prontuario_id) REFERENCES Prontuario(id)
+    telefone VARCHAR(15) NOT NULL,
+    contato_wpp BOOLEAN DEFAULT TRUE,
+    fk_responsavel_id INT,
+    fk_prontuario_id INT,
+    FOREIGN KEY (fk_responsavel_id) REFERENCES Responsavel(id),
+    FOREIGN KEY (fk_prontuario_id) REFERENCES Prontuario(id)
+);
+
+CREATE TABLE Contrato_LGPD (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    data_aceite DATETIME NOT NULL,
+    ip_registro VARCHAR(45) NOT NULL,
+    termo_tcle TEXT,
+    fk_paciente_id INT,
+    FOREIGN KEY (fk_paciente_id) REFERENCES Paciente(id)
 );
 
 CREATE TABLE Conteudo (
@@ -73,17 +86,17 @@ CREATE TABLE Conteudo (
     titulo VARCHAR(100),
     arq_midia VARCHAR(255),
     perfil_interface VARCHAR(50),
-    fk_Psicologo_id INT,
-    FOREIGN KEY (fk_Psicologo_id) REFERENCES Psicologo(fk_usuario_id)
+    fk_psicologo_id INT,
+    FOREIGN KEY (fk_psicologo_id) REFERENCES Psicologo(fk_usuario_id)
 );
 
 CREATE TABLE Acessa (
-    fk_Paciente_id INT,
-    fk_Conteudo_id INT,
+    fk_paciente_id INT,
+    fk_conteudo_id INT,
     status_liberacao BOOLEAN,
-    PRIMARY KEY (fk_Paciente_id, fk_Conteudo_id),
-    FOREIGN KEY (fk_Paciente_id) REFERENCES Paciente(id),
-    FOREIGN KEY (fk_Conteudo_id) REFERENCES Conteudo(id)
+    PRIMARY KEY (fk_paciente_id, fk_conteudo_id),
+    FOREIGN KEY (fk_paciente_id) REFERENCES Paciente(id),
+    FOREIGN KEY (fk_conteudo_id) REFERENCES Conteudo(id)
 );
 
 CREATE TABLE Atv_Terap (
@@ -92,32 +105,31 @@ CREATE TABLE Atv_Terap (
     enunciado TEXT,
     resposta_pac TEXT,
     feedback_psi TEXT,
-    fk_Psicologo_id INT,
-    fk_Paciente_id INT,
-    FOREIGN KEY (fk_Psicologo_id) REFERENCES Psicologo(fk_usuario_id),
-    FOREIGN KEY (fk_Paciente_id) REFERENCES Paciente(id)
+    fk_psicologo_id INT,
+    fk_paciente_id INT,
+    FOREIGN KEY (fk_psicologo_id) REFERENCES Psicologo(fk_usuario_id),
+    FOREIGN KEY (fk_paciente_id) REFERENCES Paciente(id)
 );
 
 CREATE TABLE Reg_Sessao (
     id INT PRIMARY KEY AUTO_INCREMENT,
     identificacao_sessao VARCHAR(50),
-    data_registro DATE,
     queixa TEXT,
     evolucao TEXT,
-    fk_Prontuario_id INT,
-    fk_Transcricao_IA_id INT,
-    FOREIGN KEY (fk_Prontuario_id) REFERENCES Prontuario(id),
-    FOREIGN KEY (fk_Transcricao_IA_id) REFERENCES Transcricao_IA(id)
+    obs_clinicas TEXT,
+    fk_prontuario_id INT,
+    fk_transcricao_id INT,
+    FOREIGN KEY (fk_prontuario_id) REFERENCES Prontuario(id),
+    FOREIGN KEY (fk_transcricao_id) REFERENCES Transcricao(id)
 );
 
 CREATE TABLE Pagamento (
     id INT PRIMARY KEY AUTO_INCREMENT,
     valor DECIMAL(10,2) NOT NULL,
-    data_pagto DATE,
-    forma_pagto VARCHAR(50),
-    status_quitado BOOLEAN,
-    fk_Doc_Fiscal_id INT,
-    FOREIGN KEY (fk_Doc_Fiscal_id) REFERENCES Doc_Fiscal(id)
+    metodo VARCHAR(30),
+    quitado BOOLEAN,
+    fk_doc_fiscal_id INT,
+    FOREIGN KEY (fk_doc_fiscal_id) REFERENCES Doc_Fiscal(id)
 );
 
 CREATE TABLE Pacote_Sessao (
@@ -126,22 +138,23 @@ CREATE TABLE Pacote_Sessao (
     total_sessoes INT,
     sessoes_utilizadas INT,
     data_validade DATE,
-    fk_Paciente_id INT,
-    FOREIGN KEY (fk_Paciente_id) REFERENCES Paciente(id)
+    fk_paciente_id INT,
+    FOREIGN KEY (fk_paciente_id) REFERENCES Paciente(id)
 );
 
 CREATE TABLE Consulta (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    data_hora_sessao DATETIME NOT NULL,
-    status_presenca VARCHAR(50),
-    fk_Paciente_id INT,
-    fk_Psicologo_id INT,
-    fk_Pacote_Sessao_id INT,
-    fk_Pagamento_id INT,
-    FOREIGN KEY (fk_Paciente_id) REFERENCES Paciente(id),
-    FOREIGN KEY (fk_Psicologo_id) REFERENCES Psicologo(fk_usuario_id),
-    FOREIGN KEY (fk_Pacote_Sessao_id) REFERENCES Pacote_Sessao(id),
-    FOREIGN KEY (fk_Pagamento_id) REFERENCES Pagamento(id)
+    data_hora DATETIME NOT NULL,
+    presenca ENUM('Agendada', 'Realizada', 'Falta', 'Cancelada'),
+    modalidade ENUM('Presencial', 'Online'),
+    fk_paciente_id INT,
+    fk_psicologo_id INT,
+    fk_pacote_Sessao_id INT,
+    fk_pagamento_id INT,
+    FOREIGN KEY (fk_paciente_id) REFERENCES Paciente(id),
+    FOREIGN KEY (fk_psicologo_id) REFERENCES Psicologo(fk_usuario_id),
+    FOREIGN KEY (fk_pacote_Sessao_id) REFERENCES Pacote_Sessao(id),
+    FOREIGN KEY (fk_pagamento_id) REFERENCES Pagamento(id)
 );
 
 CREATE TABLE Notificacao (
@@ -149,6 +162,6 @@ CREATE TABLE Notificacao (
     conteudo_msg TEXT,
     data_hora_disparo DATETIME,
     acao_resposta VARCHAR(50),
-    fk_Consulta_id INT,
-    FOREIGN KEY (fk_Consulta_id) REFERENCES Consulta(id)
+    fk_consulta_id INT,
+    FOREIGN KEY (fk_consulta_id) REFERENCES Consulta(id)
 );
