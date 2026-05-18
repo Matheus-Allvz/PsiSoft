@@ -26,15 +26,15 @@ Vocês deverão fazer um **levantamento de requisitos**. Para isso podem executa
 
 | Tarefa                                                 | Pessoas          | Status       |
 | :----------------------------------------------------- | :--------------- | :----------- |
-| Levantamento de Normas, Legislações e Padrões          |                  | Não iniciada |
+| Levantamento de Normas, Legislações e Padrões          |                  | Concluída    |
 | Elaborar roteiro de entrevistas                        | Marcos & Lavinia | Concluída    |
 | Realizar as entrevistas                                | Nicole & Pedro   | Concluída    |
 | Fazer ata e transcrição das entrevistas                | Nicole & Pedro   | Concluída    |
 | Especificar requisitos (Entrevistas)                   | Marcos & Lavinia | Concluída    |
-| Elaborar o questionário                                | Daniel & Rafael  | Não iniciada |
-| Especificar requisitos (Questionário)                  | Daniel & Rafael  | Não iniciada |
+| Elaborar o questionário                                | Daniel & Rafael  | Concluída    |
+| Especificar requisitos (Questionário)                  | Daniel & Rafael  | Concluída    |
 | Analisar sistema análogo (Amplimed)                    | Matheus & Davi   | Concluída    |
-| Lista de Requisitos Geral (Consolidada)                | Todos            | Não iniciada |
-| Elaborar a matriz de rastreabilidade                   | Matheus & Davi   | Não iniciada |
+| Lista de Requisitos Geral (Consolidada)                | Todos            | Concluída    |
+| Elaborar a matriz de rastreabilidade                   | Matheus & Davi   | Concluída    |
 
 **Observação:**  Escolhemos como ferramenta o GitHub e o Google Drive. Sobre o sistema análogo, foi determinado o "Amplimed", ele é um sistema para gestão de consultórios e clínicas.
