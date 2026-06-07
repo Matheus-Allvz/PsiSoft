@@ -1,0 +1,46 @@
+@startuml dcmp-consulta
+' ============================================================
+' DCmp – Pacote: Consulta
+' RF-04, RF-09 · RN-02 Sigilo
+' Contratos Larman 01, 02 e 03
+' ============================================================
+
+skinparam defaultTextAlignment center
+skinparam component {
+    BackgroundColor #EFF4FB
+    BorderColor #2C5F9E
+    FontName Arial
+    FontSize 13
+}
+skinparam interface {
+    BackgroundColor #FFFFFF
+    BorderColor #2C5F9E
+}
+skinparam package {
+    BackgroundColor #F0F4FF
+    BorderColor #4A6FA5
+    FontSize 14
+}
+skinparam ArrowColor #444444
+skinparam linetype ortho
+
+package "Consulta" {
+    component [ConsultaController] as CO_C
+    component [ConsultaService]    as CO_S
+    interface "IConsulta"          as ICo
+
+    CO_C -down-> CO_S : usa
+    CO_C - ICo
+}
+
+component [Agendamento]       as EXT_AG <<external>>
+component [Gestão Financeira] as EXT_FI <<external>>
+component [Notificação]       as EXT_NO <<external>>
+component [Sessão]            as EXT_SE <<external>>
+
+CO_S ..> EXT_AG : <<use>>
+CO_S ..> EXT_FI : <<use>>
+CO_S ..> EXT_NO : <<use>>
+CO_S ..> EXT_SE : <<use>>
+
+@enduml

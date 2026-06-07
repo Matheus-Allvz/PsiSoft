@@ -1,0 +1,44 @@
+@startuml dcmp-gestao-financeira
+' ============================================================
+' DCmp – Pacote: Gestão Financeira
+' RF-08 Recibos · RNF-01 Criptografia
+' Contratos Larman 02 e 03 · Webhook assíncrono HTTPS/TLS
+' ============================================================
+
+skinparam defaultTextAlignment center
+skinparam component {
+    BackgroundColor #EFF4FB
+    BorderColor #2C5F9E
+    FontName Arial
+    FontSize 13
+}
+skinparam interface {
+    BackgroundColor #FFFFFF
+    BorderColor #2C5F9E
+}
+skinparam package {
+    BackgroundColor #F0F4FF
+    BorderColor #4A6FA5
+    FontSize 14
+}
+skinparam ArrowColor #444444
+skinparam linetype ortho
+
+package "Gestão Financeira" {
+    component [FinanceiroController] as FI_C
+    component [WebhookHandler]       as FI_W
+    component [FinanceiroService]    as FI_S
+    interface "IFinanceiro"          as IFi
+
+    FI_C -down-> FI_S : usa
+    FI_W -down-> FI_S : usa
+    FI_S - IFi
+}
+
+component [Gateway de Pagamento] as EXT_GW <<external>>
+component [Usuários]             as EXT_US <<external>>
+
+FI_S ..> EXT_GW : <<use>>
+FI_S ..> EXT_US : <<use>>
+
+@enduml

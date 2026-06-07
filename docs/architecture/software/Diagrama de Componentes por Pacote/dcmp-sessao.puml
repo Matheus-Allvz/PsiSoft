@@ -1,0 +1,41 @@
+@startuml dcmp-sessao
+' ============================================================
+' DCmp – Pacote: Sessão
+' RF-01 Prontuário CFP · RNF-06 IA pós-sessão · RN-07 Transcrição
+' ============================================================
+
+skinparam defaultTextAlignment center
+skinparam component {
+    BackgroundColor #EFF4FB
+    BorderColor #2C5F9E
+    FontName Arial
+    FontSize 13
+}
+skinparam interface {
+    BackgroundColor #FFFFFF
+    BorderColor #2C5F9E
+}
+skinparam package {
+    BackgroundColor #F0F4FF
+    BorderColor #4A6FA5
+    FontSize 14
+}
+skinparam ArrowColor #444444
+skinparam linetype ortho
+
+package "Sessão" {
+    component [SessaoController] as SE_C
+    component [SessaoService]    as SE_S
+    interface "ISessao"          as ISe
+
+    SE_C -down-> SE_S : usa
+    SE_C - ISe
+}
+
+component [Prontuário] as EXT_PR <<external>>
+component [Consulta]   as EXT_CO <<external>>
+
+SE_S ..> EXT_PR : <<use>>
+SE_S ..> EXT_CO : <<use>>
+
+@enduml

@@ -1,0 +1,39 @@
+@startuml dcmp-contrato
+' ============================================================
+' DCmp – Pacote: Contrato
+' RF-03 TCLE · REST-03 Bloqueio pré-contrato · RN-05 Propriedade
+' ============================================================
+
+skinparam defaultTextAlignment center
+skinparam component {
+    BackgroundColor #EFF4FB
+    BorderColor #2C5F9E
+    FontName Arial
+    FontSize 13
+}
+skinparam interface {
+    BackgroundColor #FFFFFF
+    BorderColor #2C5F9E
+}
+skinparam package {
+    BackgroundColor #F0F4FF
+    BorderColor #4A6FA5
+    FontSize 14
+}
+skinparam ArrowColor #444444
+skinparam linetype ortho
+
+package "Contrato" {
+    component [ContratoController] as CT_C
+    component [ContratoService]    as CT_S
+    interface "IContrato"          as ICt
+
+    CT_C -down-> CT_S : usa
+    CT_C - ICt
+}
+
+component [Usuários] as EXT_US <<external>>
+
+CT_S ..> EXT_US : <<use>>
+
+@enduml

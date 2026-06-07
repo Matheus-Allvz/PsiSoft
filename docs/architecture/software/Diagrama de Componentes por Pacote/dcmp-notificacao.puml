@@ -1,0 +1,39 @@
+@startuml dcmp-notificacao
+' ============================================================
+' DCmp – Pacote: Notificação
+' RF-09 Lembretes 24h · RN-02 Somente dados administrativos
+' ============================================================
+
+skinparam defaultTextAlignment center
+skinparam component {
+    BackgroundColor #EFF4FB
+    BorderColor #2C5F9E
+    FontName Arial
+    FontSize 13
+}
+skinparam interface {
+    BackgroundColor #FFFFFF
+    BorderColor #2C5F9E
+}
+skinparam package {
+    BackgroundColor #F0F4FF
+    BorderColor #4A6FA5
+    FontSize 14
+}
+skinparam ArrowColor #444444
+skinparam linetype ortho
+
+package "Notificação" {
+    component [NotificacaoController] as NO_C
+    component [NotificacaoService]    as NO_S
+    interface "INotificacao"          as INo
+
+    NO_C -down-> NO_S : usa
+    NO_C - INo
+}
+
+component [API WhatsApp (Meta)] as EXT_WPP <<external>>
+
+NO_S ..> EXT_WPP : <<use>>
+
+@enduml

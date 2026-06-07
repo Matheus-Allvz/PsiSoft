@@ -1,0 +1,41 @@
+@startuml dcmp-usuarios
+' ============================================================
+' DCmp – Pacote: Usuários
+' RF-03 TCLE · RNF-02 MFA · RN-04 Menores · REST-02 Segregação
+' ============================================================
+
+skinparam defaultTextAlignment center
+skinparam component {
+    BackgroundColor #EFF4FB
+    BorderColor #2C5F9E
+    FontName Arial
+    FontSize 13
+}
+skinparam interface {
+    BackgroundColor #FFFFFF
+    BorderColor #2C5F9E
+}
+skinparam package {
+    BackgroundColor #F0F4FF
+    BorderColor #4A6FA5
+    FontSize 14
+}
+skinparam ArrowColor #444444
+skinparam linetype ortho
+
+package "Usuários" {
+    component [UsuarioController] as US_C
+    component [AuthService]       as US_A
+    component [UsuarioService]    as US_S
+    interface "IUsuarios"         as IUs
+
+    US_C -down-> US_A : usa
+    US_C -down-> US_S : usa
+    US_C - IUs
+}
+
+component [Contrato] as EXT_CT <<external>>
+
+US_S ..> EXT_CT : <<use>>
+
+@enduml
