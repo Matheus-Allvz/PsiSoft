@@ -3,6 +3,7 @@
 .idea/
 *.swp
 *.swo
+.specs
 
 # OS files
 .DS_Store
@@ -13,13 +14,19 @@ Thumbs.db
 .env.local
 
 # Build artifacts
-/target/
+/backend/target/
 /node_modules/
-/dist/
-/build/
 
 # Logs
 *.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# Local Backend Guides (Obsidian)
+/backend/docs/guides/
+/tests/auth-test/
+
+# Added by cargo
+Cargo.lock
+ 
