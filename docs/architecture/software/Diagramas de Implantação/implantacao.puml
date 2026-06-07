@@ -1,0 +1,69 @@
+@startuml
+' Configurações visuais
+skinparam node {
+    BackgroundColor LightBlue
+    BorderColor DarkBlue
+}
+skinparam artifact {
+    BackgroundColor #E3F2FD
+    BorderColor #1E88E5
+}
+
+' 1. Lado do Cliente
+node "Dispositivo do Usuário\n(Smartphone / PC)" as Cliente <<device>> {
+    node "Navegador / SO Mobile" <<executionEnvironment>> {
+        artifact "Frontend PsiSoft\n(PWA/App)" as UI <<artefato>>
+    }
+}
+
+' 2. Infraestrutura Principal (A Nuvem)
+node "Ambiente Cloud PsiSoft\n(AWS / GCP - VPC)" as Nuvem <<device>> {
+    
+    node "Instância do Servidor de Aplicação" as Backend <<device>> {
+        node "Runtime (ex: Node.js / JVM)" <<executionEnvironment>> {
+            artifact "API PsiSoft Executável" as API <<artefato>>
+        }
+    }
+    
+    node "Instância de Banco de Dados" as DBServer <<device>> {
+        node "SGBD (MySQL / PostgreSQL)" <<executionEnvironment>> {
+            artifact "Esquema e Dados\nCriptografados (AES-256)" as Dados <<artefato>>
+        }
+    }
+}
+
+' 3. Serviços de Terceiros
+node "Infraestrutura de Terceiros" as Terceiros <<device>> {
+    
+    node "Servidores CFP" <<device>> {
+        artifact "API e-Psi" as ePsi <<artefato>>
+    }
+    
+    node "Servidores Meta" <<device>> {
+        artifact "API WhatsApp" as Wpp <<artefato>>
+    }
+    
+    node "Provedor de IA" <<device>> {
+        artifact "Motor de Transcrição" as IA <<artefato>>
+    }
+    
+    node "Gateway de Pagamento" <<device>> {
+        artifact "Processador Financeiro" as Pgto <<artefato>>
+    }
+}
+
+' ==========================================
+' Caminhos de Comunicação (Associações Físicas)
+' ==========================================
+
+' Comunicação Interna e Cliente
+UI -- API : <<HTTPS / TLS 1.3>>
+API -- Dados : <<TCP/IP / Rede Privada>>
+
+' Integrações Externas
+API -- ePsi : <<HTTPS / REST>>
+API -- Wpp : <<HTTPS / REST>>
+API -- IA : <<HTTPS / REST>>
+API -- Pgto : <<HTTPS / REST>>
+
+@enduml
