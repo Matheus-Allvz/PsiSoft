@@ -24,9 +24,8 @@ yarn-debug.log*
 yarn-error.log*
 
 # Local Backend Guides (Obsidian)
-/backend/docs/guides/
+/backend/docs/
 /tests/auth-test/
 
 # Added by cargo
 Cargo.lock
- 
