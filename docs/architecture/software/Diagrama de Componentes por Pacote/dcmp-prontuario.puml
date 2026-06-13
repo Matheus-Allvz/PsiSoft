@@ -1,0 +1,44 @@
+@startuml dcmp-prontuario
+' ============================================================
+' DCmp – Pacote: Prontuário
+' RF-01 · RF-02 Exportação · RN-01 Guarda 5 anos
+' RNF-06 Transcrição IA · RNF-07 CFP 001/2009
+' ============================================================
+
+skinparam defaultTextAlignment center
+skinparam component {
+    BackgroundColor #EFF4FB
+    BorderColor #2C5F9E
+    FontName Arial
+    FontSize 13
+}
+skinparam interface {
+    BackgroundColor #FFFFFF
+    BorderColor #2C5F9E
+}
+skinparam package {
+    BackgroundColor #F0F4FF
+    BorderColor #4A6FA5
+    FontSize 14
+}
+skinparam ArrowColor #444444
+skinparam linetype ortho
+
+package "Prontuário" {
+    component [ProntuarioController] as PR_C
+    component [ProntuarioService]    as PR_S
+    component [TranscricaoService]   as PR_T
+    interface "IProntuario"          as IPr
+
+    PR_C -down-> PR_S : usa
+    PR_C -down-> PR_T : usa
+    PR_C - IPr
+}
+
+component [Motor de IA] as EXT_IA <<external>>
+component [Usuários]    as EXT_US <<external>>
+
+PR_T ..> EXT_IA : <<use>>
+PR_S ..> EXT_US : <<use>>
+
+@enduml

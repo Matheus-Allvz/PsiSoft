@@ -40,4 +40,4 @@ Esquema Operacional de Banco de Dados - Descrição de tabelas com atributos, 
 
 **Para cada operação em uma Classe - Diagrama de sequência - 3 exemplos a escolher** (a definir)
 
-**Para cada operação em uma Classe Contrato de operação**o  - Capítulo 11 - Larman - 3 exemplos a escolher (a definir)
+**Para cada operação em uma Classe Contrato de operação**o  - Capítulo 11 - Larman - 3 exemplos a escolher (Davi e Daniel)

@@ -1,0 +1,44 @@
+@startuml dcmp-agendamento
+' ============================================================
+' DCmp – Pacote: Agendamento
+' RF-04 Agendamento autônomo · RF-05 Validação e-Psi
+' Contrato Larman 01: registrarConsultaPendente()
+' ============================================================
+
+skinparam defaultTextAlignment center
+skinparam component {
+    BackgroundColor #EFF4FB
+    BorderColor #2C5F9E
+    FontName Arial
+    FontSize 13
+}
+skinparam interface {
+    BackgroundColor #FFFFFF
+    BorderColor #2C5F9E
+}
+skinparam package {
+    BackgroundColor #F0F4FF
+    BorderColor #4A6FA5
+    FontSize 14
+}
+skinparam ArrowColor #444444
+skinparam linetype ortho
+
+package "Agendamento" {
+    component [AgendamentoController] as AG_C
+    component [AgendamentoService]    as AG_S
+    interface "IAgendamento"          as IAg
+
+    AG_C -down-> AG_S : usa
+    AG_C - IAg
+}
+
+component [Usuários]   as EXT_US  <<external>>
+component [Consulta]   as EXT_CO  <<external>>
+component [API e-Psi]  as EXT_PSI <<external>>
+
+AG_S ..> EXT_US  : <<use>>
+AG_S ..> EXT_CO  : <<use>>
+AG_S ..> EXT_PSI : <<use>>
+
+@enduml
