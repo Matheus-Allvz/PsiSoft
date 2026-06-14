@@ -4,71 +4,66 @@
 
 Esta seção detalha os contratos de operação do sistema PsiSoft, elaborados de acordo com as diretrizes do Capítulo 11 da obra *Applying UML and Patterns* (Craig Larman). O objetivo destes contratos é descrever o comportamento do sistema de forma declarativa, focando estritamente nas mudanças de estado do Modelo de Domínio (instâncias criadas, associações formadas e atributos modificados), desvinculando o design da implementação algorítmica.
 
-Conforme a padronização arquitetural exigida, todas as **Pós-condições** estão descritas no tempo verbal passado.
+Nesta versão, as assinaturas das operações foram fortificadas utilizando a tipagem real da linguagem **Rust**, garantindo maior aderência ao código (ex: `uuid::Uuid`, `chrono::DateTime<Utc>`, `String`, `bool`, `rust_decimal::Decimal`). Conforme a padronização arquitetural exigida, todas as **Pós-condições** estão descritas no tempo verbal passado.
 
 ---
 
-### Contrato de Operação 01: Registro Inicial de Reserva
+### Contrato de Operação 01: Autenticação de Usuário (Login)
 
-* **Operação:** `registrarConsultaPendente(idPsicologo: INT, idPaciente: INT, dataHora: DATETIME, modalidade: ENUM)`
+* **Operação:** `authenticate(email: String, password: String) -> Result<String, AuthError>`
+* **Referências Cruzadas:** 
+  * Casos de Uso: Login na Plataforma.
+  * Módulos (C2/C3): API, Services (Auth), Domain (User).
+* **Pré-condições:**
+  * Deve existir uma instância de `User` no banco de dados (`Sqlx`) cujo atributo `email` corresponda exatamente ao parâmetro `email`.
+  * A senha fornecida em `password`, ao passar pela função de verificação criptográfica (Argon2), deve coincidir com o `password_hash` da instância de `User` encontrada.
+* **Pós-condições:**
+  * Uma nova sessão virtual de usuário (representada criptograficamente por um Token JWT) **foi gerada**.
+  * O atributo `last_login_at` (do tipo `chrono::DateTime<Utc>`) da instância de `User` **foi alterado** para o timestamp atual do servidor.
+* **Regras de Negócio Associadas:** 
+  * Senhas nunca devem ser trafegadas ou armazenadas em texto plano.
+  * Em caso de credenciais inválidas, a operação deve retornar um erro, e o estado do sistema não sofre alterações.
+
+---
+
+### Contrato de Operação 02: Registro Inicial de Agendamento
+
+* **Operação:** `criar_agendamento(id_psicologo: uuid::Uuid, id_paciente: uuid::Uuid, data_hora: chrono::DateTime<Utc>, modalidade: String) -> Result<uuid::Uuid, AgendamentoError>`
 * **Referências Cruzadas:** 
   * Casos de Uso: Agendamento Autônomo.
-  * Módulos (C2/C3): Agendamento, Consulta.
+  * Módulos (C2/C3): API, Services (Agendamento), Domain (Consulta).
 * **Pré-condições:**
-  * Deve existir uma instância de `Psicologo` cujo identificador seja `idPsicologo` e que possua status ativo na plataforma.
-  * Deve existir uma instância de `Paciente` cujo identificador seja `idPaciente`.
-  * Não deve existir nenhuma instância de `Consulta` associada a este `idPsicologo` onde o atributo `data_hora` seja igual a `dataHora` e o atributo `presenca` seja diferente de 'Cancelada' (Garantia contra *double-booking*).
+  * Deve existir uma instância de `Psicologo` cujo identificador seja `id_psicologo` (tipo `uuid::Uuid`) com status ativo.
+  * Deve existir uma instância de `Paciente` cujo identificador seja `id_paciente` (tipo `uuid::Uuid`).
+  * A agenda do `Psicologo` não deve possuir nenhuma instância de `Agendamento` na mesma `data_hora` cujo atributo `status` (tipo `String` ou enum) seja diferente de `'Cancelado'`.
 * **Pós-condições:**
-  * Uma nova instância *c* de `Consulta` **foi criada**.
-  * O atributo *c.data_hora* **tornou-se** o valor do parâmetro `dataHora`.
-  * O atributo *c.presenca* **tornou-se** 'Pendente' (estado transitório aguardando gateway).
-  * O atributo *c.modalidade* **tornou-se** o valor do parâmetro `modalidade` ('Presencial' ou 'Online').
-  * Uma associação **foi formada** entre a instância *c* (`Consulta`) e a instância existente de `Psicologo` correspondente a `idPsicologo`.
-  * Uma associação **foi formada** entre a instância *c* (`Consulta`) e a instância existente de `Paciente` correspondente a `idPaciente`.
+  * Uma nova instância *a* de `Agendamento` **foi criada**.
+  * O atributo *a.id* **tornou-se** um novo identificador único (`uuid::Uuid`).
+  * O atributo *a.data_hora* **tornou-se** o valor recebido no parâmetro `data_hora`.
+  * O atributo *a.status* **tornou-se** a string `'Pendente'`.
+  * O atributo *a.modalidade* **tornou-se** o valor recebido no parâmetro `modalidade`.
+  * Uma associação (Chave Estrangeira do BD) **foi formada** entre a instância *a* e a instância existente de `Psicologo`.
+  * Uma associação **foi formada** entre a instância *a* e a instância existente de `Paciente`.
 * **Regras de Negócio Associadas:** 
-  * A consulta nasce bloqueada temporariamente para outros pacientes, mas sua efetivação depende estritamente do retorno positivo do fluxo financeiro em até 15 minutos (timeout).
+  * O agendamento inicial é sempre criado como bloqueado e aguarda a finalização e aprovação do gateway de pagamento para efetivação definitiva.
 
 ---
 
-### Contrato de Operação 02: Geração de Ordem de Cobrança
+### Contrato de Operação 03: Efetivação de Agendamento (Pagamento Webhook)
 
-* **Operação:** `gerarOrdemCobranca(idConsulta: INT, valorSessao: DECIMAL(10,2))`
+* **Operação:** `confirmar_pagamento(id_agendamento: uuid::Uuid, id_transacao: String, valor_pago: rust_decimal::Decimal) -> Result<(), PagamentoError>`
 * **Referências Cruzadas:** 
-  * Casos de Uso: Agendamento Autônomo, Processamento de Pagamento.
-  * Módulos (C2/C3): Consulta, Gestão Financeira.
+  * Casos de Uso: Confirmação de Pagamento, Notificações.
+  * Módulos (C2/C3): API, Services, Domain, Events.
 * **Pré-condições:**
-  * Deve existir uma instância de `Consulta` cujo identificador seja `idConsulta`.
-  * O atributo `presenca` da instância de `Consulta` deve ser exatamente igual a 'Pendente'.
-  * Não deve existir uma instância prévia de `Pagamento` já associada a esta `Consulta` com o atributo `quitado` igual a `True`.
+  * Deve existir uma instância de `Agendamento` correspondente a `id_agendamento` e que possua o status atual `'Pendente'`.
+  * A assinatura criptográfica do Webhook do gateway (no header HTTP validado pelo Axum) deve ser autêntica.
 * **Pós-condições:**
   * Uma nova instância *p* de `Pagamento` **foi criada**.
-  * O atributo *p.valor* **tornou-se** o valor do parâmetro `valorSessao`.
-  * O atributo *p.quitado* **tornou-se** `False` (tipo BOOLEAN).
-  * O atributo *p.metodo* **tornou-se** `NULL` (aguardando a escolha e retorno da API externa do Gateway).
-  * Uma associação **foi formada** entre a instância *p* (`Pagamento`) e a instância de `Consulta` correspondente a `idConsulta`.
-* **Notas Arquiteturais:** 
-  * Esta operação precede imediatamente o disparo da requisição HTTP (REST) para o Gateway de Pagamento. A entidade `Pagamento` local servirá de âncora para o Webhook futuro.
-
----
-
-### Contrato de Operação 03: Efetivação Reativa via Webhook
-
-* **Operação:** `efetivarConsulta(idConsulta: INT, idPagamento: INT, metodoGateway: VARCHAR)`
-* **Referências Cruzadas:** 
-  * Casos de Uso: Confirmação de Agendamento, Notificação Automática.
-  * Módulos (C2/C3): Gestão Financeira, Consulta, Notificação.
-* **Pré-condições:**
-  * Deve existir uma instância de `Consulta` correspondente a `idConsulta` com status 'Pendente'.
-  * Deve existir uma instância de `Pagamento` correspondente a `idPagamento` associada a esta consulta.
-  * O atributo `quitado` desta instância de `Pagamento` deve ser `False` antes da execução.
-  * A assinatura criptográfica do Webhook (header) deve ter sido validada (RNF-01 de Segurança).
-* **Pós-condições:**
-  * O atributo *quitado* da instância existente de `Pagamento` **foi alterado** para `True`.
-  * O atributo *metodo* da instância existente de `Pagamento` **foi alterado** para o valor recebido em `metodoGateway` (ex: 'Pix', 'Cartao').
-  * O atributo *presenca* da instância de `Consulta` **foi alterado** de 'Pendente' para 'Agendada' no banco de dados.
-  * Uma nova instância *n* de `Notificacao` **foi criada**.
-  * O atributo *n.conteudo_msg* **foi preenchido** com a string de confirmação contendo os dados do paciente e data.
-  * Uma associação **foi formada** entre a instância *n* (`Notificacao`) e a instância de `Consulta`.
+  * O atributo *p.id_transacao* **tornou-se** o valor do parâmetro `id_transacao`.
+  * O atributo *p.valor* **tornou-se** o valor recebido em `valor_pago`.
+  * O atributo *p.quitado* (tipo `bool`) **tornou-se** `true`.
+  * Uma associação **foi formada** entre a instância *p* (`Pagamento`) e a instância referenciada de `Agendamento`.
+  * O atributo *status* da instância associada de `Agendamento` **foi alterado** de `'Pendente'` para `'Confirmado'`.
 * **Eventos Disparados:**
-  * O componente de Notificação empurra o alerta para o WhatsApp (API Meta).
-  * O WebSocket é acionado para atualizar a Interface do Usuário (UI) do Paciente.
+  * A confirmação do agendamento aciona a camada `Events` (Tokio) para o disparo assíncrono de notificações via WhatsApp (API da Meta) e atualização SSE na UI.
