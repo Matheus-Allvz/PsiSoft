@@ -93,3 +93,4 @@ deactivate API
 UI --> Paciente : Exibe tela "Consulta Confirmada" e notifica via WhatsApp
 @enduml
 ```
+
