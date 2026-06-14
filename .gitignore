@@ -4,6 +4,8 @@
 *.swp
 *.swo
 .specs
+/review/
+/docs/planning/task-FINAL.md
 
 # OS files
 .DS_Store
