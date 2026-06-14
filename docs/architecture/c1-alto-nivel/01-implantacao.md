@@ -36,13 +36,13 @@ node "Dispositivo do Usuário\n(Smartphone / PC)" as Cliente <<device>> {
 node "Ambiente Cloud PsiSoft\n(AWS / GCP - VPC)" as Nuvem <<device>> {
 
     node "Instância do Servidor de Aplicação" as Backend <<device>> {
-        node "Runtime (ex: Node.js / JVM)" <<executionEnvironment>> {
+        node "Runtime (Rust, Axum, Tokio, Sqlx)" <<executionEnvironment>> {
             artifact "API PsiSoft Executável" as API <<artefato>>
         }
     }
 
     node "Instância de Banco de Dados" as DBServer <<device>> {
-        node "SGBD (MySQL / PostgreSQL)" <<executionEnvironment>> {
+        node "SGBD (PostgreSQL)" <<executionEnvironment>> {
             artifact "Esquema e Dados\nCriptografados (AES-256)" as Dados <<artefato>>
         }
     }
