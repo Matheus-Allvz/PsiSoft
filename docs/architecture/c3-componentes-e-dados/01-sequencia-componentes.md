@@ -2,10 +2,10 @@
 
 ### 2.1 Diagrama de Sequência de Componentes: Fluxo de Agendamento e Pagamento
 
-A figura abaixo ilustra as interações e trocas de mensagens entre os componentes arquiteturais do sistema durante o processo central de reserva de horário e processamento assíncrono de pagamento.
+A figura abaixo ilustra as interações e trocas de mensagens entre as camadas arquiteturais do sistema (Rust) durante o processo central de reserva de horário e processamento assíncrono de pagamento.
 
 **Justificativa Arquitetural:**
-O diagrama demonstra o comportamento dinâmico dos pacotes definidos no Nível C2 (`Agendamento`, `Consulta`, `Gestão Financeira` e `Notificação`). Optou-se por um modelo de comunicação assíncrona (Webhook) na etapa de confirmação de pagamento para evitar bloqueios de processamento (*polling*), otimizando o consumo de recursos na nuvem. Toda a comunicação externa com o Gateway e WhatsApp ocorre apenas após as devidas transições de estado nas entidades de domínio locais.
+O diagrama demonstra o comportamento dinâmico das camadas da aplicação (`api`, `services`, `domain`, `events`). Optou-se por separar a lógica de negócios na camada `services`, enquanto as regras de estado e validações residem em `domain`. A comunicação com serviços externos (Gateway e WhatsApp) e as notificações em tempo real ocorrem de forma assíncrona, orquestradas pela camada `events` (usando Tokio), otimizando a resposta da API em Axum e evitando bloqueios no fluxo principal.
 
 ### Apêndice: Código-Fonte do Diagrama (PlantUML)
 
@@ -24,12 +24,15 @@ skinparam sequence {
 
 actor "Paciente" as Paciente
 
-box "Plataforma PsiSoft (Módulos Internos)" #F0F8FF
+box "Cliente" #E6F3FF
     participant "Interface\n(Frontend UI)" as UI
-    participant "Componente\nAgendamento" as C_Agendamento
-    participant "Componente\nConsulta" as C_Consulta
-    participant "Componente\nGestão Financeira" as C_Financeiro
-    participant "Componente\nNotificação" as C_Notificacao
+end box
+
+box "Plataforma PsiSoft (Backend Rust)" #F0F8FF
+    participant "Camada API\n(Axum Handlers)" as API
+    participant "Camada Services\n(Business Logic)" as Services
+    participant "Camada Domain\n(Models/Entities)" as Domain
+    participant "Camada Events\n(Async/Tokio)" as Events
 end box
 
 box "Serviços Externos" #F9F9F9
@@ -41,46 +44,52 @@ end box
 autonumber
 
 Paciente -> UI : Solicita reserva de horário (idPsicologo, dataHora)
-UI -> C_Agendamento : processarReserva(idPsicologo, dataHora)
+UI -> API : POST /agendamentos (idPsicologo, dataHora)
 
-activate C_Agendamento
-    C_Agendamento -> C_Consulta : registrarConsultaPendente(dadosConsulta)
-    C_Consulta --> C_Agendamento : Retorna idConsulta
+activate API
+    API -> Services : processar_reserva(dados)
     
-    C_Agendamento -> C_Financeiro : gerarOrdemCobranca(idConsulta, valor)
+    activate Services
+        Services -> Domain : Consulta::nova_pendente(dados)
+        Domain --> Services : Retorna Entidade Consulta
+        
+        Services -> Ext_Gateway : solicitar_link_pagamento(valor)
+        Ext_Gateway --> Services : Retorna Link/QR Code
+        
+        Services -> Domain : atualizar_com_cobranca(link)
+        Domain --> Services : Entidade Atualizada
+        
+        Services --> API : Resposta (Consulta + Link)
+    deactivate Services
     
-    activate C_Financeiro
-        C_Financeiro -> Ext_Gateway : solicitarLinkPagamento(Pix/Cartao)
-        Ext_Gateway --> C_Financeiro : Retorna Link/QR Code
-        C_Financeiro --> C_Agendamento : Retorna dados de cobrança
-    deactivate C_Financeiro
-    
-    C_Agendamento --> UI : Exibe tela de pagamento
-deactivate C_Agendamento
+    API --> UI : 200 OK (JSON com Link)
+deactivate API
+
+UI --> Paciente : Exibe tela de pagamento
 
 ' --- Fluxo de Confirmação (Assíncrono via Webhook) ---
-note over Ext_Gateway, C_Financeiro : O paciente realiza o pagamento no aplicativo do seu banco
+note over Ext_Gateway, API : O paciente realiza o pagamento no aplicativo do seu banco
 
-Ext_Gateway -> C_Financeiro : Webhook: notificacaoPagamentoAprovado(idPagamento)
-activate C_Financeiro
+Ext_Gateway -> API : POST /webhooks/pagamento (idPagamento)
+activate API
     
-    C_Financeiro -> C_Financeiro : atualizarStatus(quitado = True)
-    C_Financeiro -> C_Consulta : efetivarConsulta(idConsulta)
-    
-    activate C_Consulta
-        C_Consulta -> C_Consulta : atualizarStatus(presenca = Agendada)
-        C_Consulta -> C_Notificacao : agendarLembreteWpp(idConsulta)
+    API -> Services : confirmar_pagamento(idPagamento)
+    activate Services
+        Services -> Domain : Consulta::efetivar()
+        Domain --> Services : Estado Atualizado (Quitado/Agendada)
         
-        activate C_Notificacao
-            C_Notificacao -> Ext_Wpp : dispararConfirmacaoImediata(celular, msg)
-        deactivate C_Notificacao
+        Services -> Events : emitir_evento(ConsultaEfetivada)
+        activate Events
+            Events -> Ext_Wpp : disparar_notificacao_whatsapp(msg)
+            Events -> UI : Evento WebSocket/SSE (Pagamento Confirmado)
+        deactivate Events
         
-        C_Consulta --> C_Financeiro : Consulta Efetivada
-    deactivate C_Consulta
+        Services --> API : Sucesso
+    deactivate Services
     
-    C_Financeiro --> Ext_Gateway : HTTP 200 OK (Ciente)   
-    C_Financeiro -> UI : Evento WebSocket/SSE (Pagamento Confirmado)
-deactivate C_Financeiro
+    API --> Ext_Gateway : HTTP 200 OK (Ciente)
+deactivate API
 
-UI -> Paciente : Exibe tela "Consulta Confirmada" e notifica via WhatsApp
+UI --> Paciente : Exibe tela "Consulta Confirmada" e notifica via WhatsApp
 @enduml
+```
