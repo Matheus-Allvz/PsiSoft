@@ -11,7 +11,7 @@ Abaixo, as tarefas estão divididas em fases de execução com o mapeamento de d
 ### Etapa 1.1: Detalhamento Completo dos Casos de Uso
 - **Arquivo Relacionado:** `docs/architecture/c2-design-detalhado/02-descricoes-casos-uso.md`
 - **Interdependências:** Nenhuma.
-- **Responsável:** [DAVI]
+- **Responsável:** [MATHEUS]
 - **Descrição da Tarefa:** O arquivo atual encontra-se vazio. É necessário descrever **todos** os casos de uso mapeados no diagrama UML em formato completo e expandido, seguindo o padrão Larman (Capítulo 6).
 
 
@@ -23,7 +23,7 @@ Abaixo, as tarefas estão divididas em fases de execução com o mapeamento de d
 ### Etapa 2.1: Documentação Introdutória e Stakeholders
 - **Arquivo Relacionado:** `docs/architecture/00-introducao-arquitetura.md` (Novo)
 - **Interdependências:** Nenhuma.
-- **Responsável:** [ ]
+- **Responsável:** [LAVINIA]
 - **Descrição da Tarefa:** Redigir as Seções 1, 2 e 3 exigidas pelo `task-FINAL.md`: Introdução/Propósito, Definição dos Stakeholders com seus interesses, e a explicação de como os principais Requisitos Não Funcionais (segurança, performance, etc.) estão sendo resolvidos na arquitetura.
 
 ### Etapa 2.2: Ajuste do Diagrama de Implantação
@@ -47,6 +47,7 @@ Abaixo, as tarefas estão divididas em fases de execução com o mapeamento de d
 - **Interdependências:** Nenhuma.
 - **Responsável:** [DAVI]
 - **Descrição da Tarefa:** O arquivo atual está vazio. Deve ser preenchido com a explicação de como o sistema foi particionado, contemplando os módulos de negócios (Agendamento, Consulta) e as divisões em camadas técnicas (API, Services, Domain, Events) estabelecidas pelo backend Rust.
+- **O arquivo está disposto como PDF em Assets**
 
 ### Etapa 3.2: Refinamento dos Diagramas de Componentes (C3)
 - **Arquivos Relacionados:** `docs/architecture/software/Diagrama de Componentes por Pacote/Componentes.md` e arquivos `*.puml`
@@ -67,13 +68,13 @@ Abaixo, as tarefas estão divididas em fases de execução com o mapeamento de d
 ### Etapa 4.2: Construção dos Diagramas de Classes
 - **Arquivo Relacionado:** `docs/architecture/c4-implementacao/03-diagramas-classes.md` (Novo)
 - **Interdependências:** Etapa 3.2.
-- **Responsável:** [ ]
+- **Responsável:** [MATHEUS]
 - **Descrição da Tarefa:** Criar, para cada componente C3, o diagrama UML detalhando as Entidades do Domínio (Structs em Rust), seus métodos (Traits/Impls) e seus atributos com tipagem nativa.
 
 ### Etapa 4.3: Diagramas de Sequência por Operação
 - **Arquivo Relacionado:** `docs/architecture/c4-implementacao/04-sequencia-classes.md` (Novo)
 - **Interdependências:** Etapa 4.2.
-- **Responsável:** [ ]
+- **Responsável:** [MATHEUS]
 - **Descrição da Tarefa:** Selecionar **2 exemplos** de operações essenciais (ex: Cadastrar Paciente e Agendar Consulta) e criar um Diagrama de Sequência de baixo nível focado na interação das "classes"/arquivos do código (Controller -> Service -> Model -> Database).
 
 ### Etapa 4.4: Contratos de Operação (Larman Cap. 11)
