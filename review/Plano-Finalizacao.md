@@ -42,12 +42,11 @@ Abaixo, as tarefas estão divididas em fases de execução com o mapeamento de d
 
 ## FASE 3: Especificação de Arquitetura - Nível C2 e C3
 
-### Etapa 3.1: Preenchimento do Racional do Diagrama de Pacotes (C2)
-- **Arquivo Relacionado:** `docs/architecture/c2-design-detalhado/01-diagrama-pacotes.md`
+### ✅ Etapa 3.1: Preenchimento do Racional do Diagrama de Pacotes (C2) - CONCLUÍDA
+- **Arquivo Relacionado:** `docs/architecture/c2-design-detalhado/01-diagrama-pacotes.md` e PDF.
 - **Interdependências:** Nenhuma.
 - **Responsável:** [DAVI]
-- **Descrição da Tarefa:** O arquivo atual está vazio. Deve ser preenchido com a explicação de como o sistema foi particionado, contemplando os módulos de negócios (Agendamento, Consulta) e as divisões em camadas técnicas (API, Services, Domain, Events) estabelecidas pelo backend Rust.
-- **O arquivo está disposto como PDF em Assets**
+- **Descrição da Tarefa:** O arquivo disposto como PDF em Assets atende a este requisito arquitetural. (Status: Concluído).
 
 ### Etapa 3.2: Refinamento dos Diagramas de Componentes (C3)
 - **Arquivos Relacionados:** `docs/architecture/software/Diagrama de Componentes por Pacote/Componentes.md` e arquivos `*.puml`
