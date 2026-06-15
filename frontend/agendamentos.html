@@ -58,10 +58,16 @@
       Médicos
       <svg class="nav-chevron" width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M4 5l2 2 2-2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </div>
-    <div class="nav-item">
-      <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><circle cx="6" cy="5" r="2.5" stroke="currentColor" stroke-width="1.4"/><path d="M1.5 13c0-2.76 2.24-5 4.5-5s4.5 2.24 4.5 5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M11 7.5c.83 0 1.5.67 1.5 1.5v4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M10 9.5h3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
-      Pacientes
-      <svg class="nav-chevron" width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M4 5l2 2 2-2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <div class="nav-item" style="flex-wrap: wrap; cursor: default;">
+      <div style="display: flex; align-items: center; width: 100%; gap: 9px; cursor: pointer;" onclick="document.getElementById('pacientes-dropdown').style.display = document.getElementById('pacientes-dropdown').style.display === 'none' ? 'block' : 'none'">
+        <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><circle cx="6" cy="5" r="2.5" stroke="currentColor" stroke-width="1.4"/><path d="M1.5 13c0-2.76 2.24-5 4.5-5s4.5 2.24 4.5 5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M11 7.5c.83 0 1.5.67 1.5 1.5v4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M10 9.5h3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+        Pacientes
+        <svg class="nav-chevron" width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M4 5l2 2 2-2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div id="pacientes-dropdown" style="display: none; width: 100%; padding-left: 24px; margin-top: 8px;">
+        <div style="padding: 6px 0; font-size: 13px; color: var(--text-secondary); cursor: pointer; transition: color 0.15s;" onmouseover="this.style.color='var(--text-primary)'" onmouseout="this.style.color='var(--text-secondary)'" onclick="window.location.href='cadastro-paciente.html'">+ Novo Paciente</div>
+        <div style="padding: 6px 0; font-size: 13px; color: var(--text-secondary); cursor: pointer; transition: color 0.15s;" onmouseover="this.style.color='var(--text-primary)'" onmouseout="this.style.color='var(--text-secondary)'">Visualizar Todos</div>
+      </div>
     </div>
     <div class="nav-item active">
       <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><rect x="1.5" y="2.5" width="12" height="11" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M5 1.5v2M10 1.5v2M1.5 6.5h12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
@@ -181,10 +187,40 @@
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1.5" y="1.5" width="4.5" height="4.5" rx=".8" fill="currentColor"/><rect x="8" y="1.5" width="4.5" height="4.5" rx=".8" fill="currentColor"/><rect x="1.5" y="8" width="4.5" height="4.5" rx=".8" fill="currentColor"/><rect x="8" y="8" width="4.5" height="4.5" rx=".8" fill="currentColor"/></svg>
           </button>
         </div>
-        <button class="btn btn-primary">
+        <button class="btn btn-primary" onclick="document.getElementById('modal-nova-consulta').style.display='flex'">
           <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 2v9M2 6.5h9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
           Novo Agendamento
         </button>
+      </div>
+    </div>
+
+    <!-- Modal Novo Agendamento -->
+    <div id="modal-nova-consulta" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15, 23, 42, 0.4); backdrop-filter: blur(4px); z-index:9999; justify-content:center; align-items:center;">
+      <div style="background:var(--card-bg); padding:32px; border-radius:16px; width:440px; max-width:90%; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); border: 1px solid var(--border);">
+        <h2 style="margin-top:0; margin-bottom: 24px; font-size: 20px; font-weight: 600; color: var(--text-primary); letter-spacing: -0.02em;">Agendar Nova Consulta</h2>
+        <form id="form-nova-consulta">
+          <div style="margin-bottom:16px;">
+            <label style="display:block; font-size:13px; font-weight: 500; margin-bottom:6px; color: var(--text-primary);">Paciente</label>
+            <select name="id_paciente" id="select-paciente" required style="width:100%; padding:10px 14px; border-radius:8px; border:1px solid var(--border); background:var(--bg); color:var(--text-primary); outline:none; font-family: var(--font); font-size: 14px; transition: border-color 0.2s; cursor: pointer; appearance: none;" onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'">
+              <option value="" disabled selected>Carregando pacientes...</option>
+            </select>
+          </div>
+          <div style="margin-bottom:16px;">
+            <label style="display:block; font-size:13px; font-weight: 500; margin-bottom:6px; color: var(--text-primary);">Data e Hora</label>
+            <input type="datetime-local" name="data_hora" required style="width:100%; padding:10px 14px; border-radius:8px; border:1px solid var(--border); background:var(--bg); color:var(--text-primary); outline:none; font-family: var(--font); font-size: 14px; transition: border-color 0.2s;" onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'">
+          </div>
+          <div style="margin-bottom:24px;">
+            <label style="display:block; font-size:13px; font-weight: 500; margin-bottom:6px; color: var(--text-primary);">Modalidade</label>
+            <select name="modalidade" style="width:100%; padding:10px 14px; border-radius:8px; border:1px solid var(--border); background:var(--bg); color:var(--text-primary); outline:none; font-family: var(--font); font-size: 14px; transition: border-color 0.2s; cursor: pointer;" onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'">
+              <option value="Presencial">Presencial</option>
+              <option value="Online">Online</option>
+            </select>
+          </div>
+          <div style="display:flex; justify-content:flex-end; gap:12px;">
+            <button type="button" onclick="document.getElementById('modal-nova-consulta').style.display='none'" style="padding:10px 20px; border-radius:8px; background:var(--bg); border:1px solid var(--border); color:var(--text-primary); cursor:pointer; font-family: var(--font); font-weight: 500; transition: background 0.2s;" onmouseover="this.style.background='#e5e7eb'" onmouseout="this.style.background='var(--bg)'">Cancelar</button>
+            <button type="submit" style="padding:10px 20px; border-radius:8px; background:var(--accent); border:none; color:#fff; cursor:pointer; font-family: var(--font); font-weight: 500; transition: background 0.2s;" onmouseover="this.style.background='var(--accent-hover)'" onmouseout="this.style.background='var(--accent)'">Agendar</button>
+          </div>
+        </form>
       </div>
     </div>
 
@@ -571,6 +607,159 @@
       item.classList.add('active');
     });
   });
+
+  // Integração com a API de Agendamentos
+  const psi_id = localStorage.getItem('psi_id');
+  const token = localStorage.getItem('token');
+
+  async function carregarConsultas() {
+    if (!psi_id || !token) {
+      console.warn('psi_id ou token não encontrados no localStorage');
+      return;
+    }
+    
+    try {
+      const response = await fetch(`http://localhost:3000/agendamentos/psicologos/${psi_id}/consultas?limit=50&offset=0`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      if (!response.ok) throw new Error('Falha ao buscar consultas');
+      
+      const consultas = await response.json();
+      const tbody = document.querySelector('tbody');
+      tbody.innerHTML = ''; // Limpa as linhas estáticas
+      
+      consultas.forEach(consulta => {
+        const dateObj = new Date(consulta.data_hora);
+        const dateStr = dateObj.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) + ' - ' + dateObj.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+        
+        const pacienteNome = consulta.paciente_nome || 'Paciente';
+        const pacienteLetra = pacienteNome.charAt(0).toUpperCase();
+        
+        const psiNome = consulta.psicologo_nome || 'Médico';
+        const psiLetra = psiNome.charAt(0).toUpperCase();
+        
+        let statusBadge = 'badge-blue';
+        let statusText = consulta.status || 'Agendado';
+        const statusLower = statusText.toLowerCase();
+        if (statusLower === 'confirmado' || statusLower === 'realizada') statusBadge = 'badge-green';
+        else if (statusLower === 'cancelado') statusBadge = 'badge-red';
+        else if (statusLower === 'aguardando') statusBadge = 'badge-orange';
+        else if (statusLower === 'verificado') statusBadge = 'badge-teal';
+        
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td class="td-datetime">${dateStr}</td>
+            <td>
+              <div class="person-cell">
+                <div class="avatar-placeholder" style="background:linear-gradient(135deg,#f59e0b,#ef4444)">${pacienteLetra}</div>
+                <div>
+                  <div class="person-name">${pacienteNome}</div>
+                  <div class="person-sub">ID do Paciente: ${consulta.fk_paciente_id || '--'}</div>
+                </div>
+              </div>
+            </td>
+            <td>
+              <div class="person-cell">
+                <div class="avatar-placeholder" style="background:linear-gradient(135deg,#10b981,#059669)">${psiLetra}</div>
+                <div>
+                  <div class="person-name">${psiNome}</div>
+                  <div class="person-sub">Psicólogo</div>
+                </div>
+              </div>
+            </td>
+            <td class="mode-text">${consulta.modalidade || 'Presencial'}</td>
+            <td><span class="badge ${statusBadge}">${statusText}</span></td>
+            <td>
+              <button class="more-btn">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="3" r="1" fill="currentColor"/><circle cx="7" cy="7" r="1" fill="currentColor"/><circle cx="7" cy="11" r="1" fill="currentColor"/></svg>
+              </button>
+            </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    } catch (error) {
+      console.error('Erro ao carregar consultas:', error);
+    }
+  }
+
+  async function carregarPacientesDropdown() {
+    if (!psi_id || !token) return;
+    try {
+      const response = await fetch(`http://localhost:3000/pacientes/psicologos/${psi_id}/pacientes`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (!response.ok) throw new Error('Falha ao buscar pacientes');
+      
+      const pacientes = await response.json();
+      const select = document.getElementById('select-paciente');
+      
+      select.innerHTML = '<option value="" disabled selected>Selecione um paciente...</option>';
+      if (pacientes.length === 0) {
+        select.innerHTML = '<option value="" disabled selected>Nenhum paciente cadastrado</option>';
+        return;
+      }
+
+      pacientes.forEach(p => {
+        const option = document.createElement('option');
+        option.value = p.id;
+        option.textContent = `${p.nome} — ${p.email || 'Sem email'}`;
+        select.appendChild(option);
+      });
+    } catch (error) {
+      console.error('Erro ao carregar pacientes no dropdown:', error);
+      const select = document.getElementById('select-paciente');
+      if (select) select.innerHTML = '<option value="" disabled selected>Erro ao carregar pacientes</option>';
+    }
+  }
+
+  window.addEventListener('load', () => {
+    carregarConsultas();
+    carregarPacientesDropdown();
+  });
+
+  // Intercept do form de Nova Consulta se houver
+  const novaConsultaForm = document.querySelector('#form-nova-consulta, .nova-consulta-form');
+  if (novaConsultaForm) {
+    novaConsultaForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const formData = new FormData(novaConsultaForm);
+      const payload = {
+        fk_paciente_id: parseInt(formData.get('id_paciente')),
+        fk_psicologo_id: parseInt(psi_id),
+        data_hora: formData.get('data_hora') + ':00',
+        modalidade: formData.get('modalidade')
+      };
+      
+      try {
+        const response = await fetch('http://localhost:3000/agendamentos/novo', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify(payload)
+        });
+        
+        if (response.ok) {
+          alert('Consulta agendada com sucesso!');
+          // Ocultar modal se existir
+          const modal = novaConsultaForm.closest('.modal, dialog');
+          if (modal && modal.style) modal.style.display = 'none';
+          if (modal && typeof modal.close === 'function') modal.close();
+          
+          carregarConsultas(); // Recarrega a tabela
+        } else {
+          alert('Falha ao agendar consulta');
+        }
+      } catch (error) {
+        console.error('Erro ao agendar consulta:', error);
+      }
+    });
+  }
 </script>
 </body>
 </html>

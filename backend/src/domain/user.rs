@@ -19,6 +19,8 @@ pub enum PerfilUsuario {
     Psicologo,
     Secretaria,
     Contador,
+    #[sqlx(rename = "paciente")]
+    Paciente,
 }
 
 #[derive(Debug, Serialize, Deserialize, FromRow, Clone)]

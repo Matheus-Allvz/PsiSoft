@@ -1,6 +1,6 @@
-@startuml dcmp-agendamento
+@startuml dcmp-auth
 ' ============================================================
-' C3 - Component Diagram: Agendamento Module
+' C3 - Component Diagram: Auth Module
 ' ============================================================
 
 skinparam defaultTextAlignment center
@@ -22,23 +22,22 @@ skinparam package {
 skinparam ArrowColor #444444
 skinparam linetype ortho
 
-package "Agendamento Module" {
-    interface "HTTP /novo, /{id}/cancelar, /psicologos/{id}/horarios, /psicologos/{id}/consultas" as API_IF
+package "Auth Module" {
+    interface "HTTP /register, /login" as API_IF
     
-    component "api::agendamento" as API <<axum Router>>
-    component "services::agendamento" as SERVICE <<Business Logic>>
-    component "domain::agendamento" as DOMAIN <<Models>>
+    component "api::auth" as API <<axum Router>>
+    component "services::auth" as SERVICE <<Business Logic>>
+    component "domain::user" as DOMAIN <<Models>>
     
     API_IF -down- API
     API -down-> SERVICE : uses
     API -down-> DOMAIN : uses
-    SERVICE -down-> DOMAIN : uses
 }
 
-component "domain::user" as USER_DOMAIN <<Models>>
+component "events::EventBus" as EVENTS <<Channel>>
 database "PostgreSQL" as DB
 
-SERVICE -down-> DB : SQLx queries
-SERVICE -down-> USER_DOMAIN : uses (Psicologo)
+API -down-> EVENTS : publishes AuthEvent
+API -down-> DB : SQLx queries
 
 @enduml

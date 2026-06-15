@@ -27,6 +27,10 @@ async fn main() -> anyhow::Result<()> {
         .connect(&database_url)
         .await?;
 
+    // Reset DB
+    sqlx::query("DROP SCHEMA public CASCADE;").execute(&db).await?;
+    sqlx::query("CREATE SCHEMA public;").execute(&db).await?;
+    
     // Run migrations
     sqlx::migrate!("./migrations")
         .run(&db)
@@ -53,6 +57,8 @@ async fn main() -> anyhow::Result<()> {
 
     let app = Router::new()
         .nest("/auth", api::auth::router(state.clone()))
+        .nest("/agendamentos", api::agendamento::router(state.clone()))
+        .nest("/pacientes", api::paciente::router(state.clone()))
         .layer(tower_http::cors::CorsLayer::permissive());
 
     let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await?;

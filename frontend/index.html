@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PsiSoft | Login</title>
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="login-style.css">
+</head>
+<body>
+    <main>
+        <section>
+            <div class="logo-wrapper">
+                <img src="logos/logo com nome.png" alt="logo do software">
+            </div>
+            <div id="login-section" class="login-card">
+                <h1>Login</h1>
+                <p class="subtitle">Faça login com seu e-mail e senha abaixo</p>
+
+                <div class="field">
+                    <label for="imail">E-mail</label>
+                    <div class="input-wrapper">
+                        <svg class="input-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                            <circle cx="8" cy="5.5" r="2.5" stroke="currentColor" stroke-width="1.4"/>
+                            <path d="M3 13.5c0-2.49 2.24-4.5 5-4.5s5 2.01 5 4.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+                        </svg>
+                        <input type="email" name="mail" id="imail" placeholder="example@gmail.com">
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label for="isenha">Senha</label>
+                    <div class="input-wrapper">
+                        <svg class="input-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                            <rect x="3" y="7" width="10" height="6.5" rx="1.5" stroke="currentColor" stroke-width="1.4"/>
+                            <path d="M5 7V5a3 3 0 0 1 6 0v2" stroke="currentColor" stroke-width="1.4"/>
+                        </svg>
+                        <input type="password" name="senha" id="isenha" placeholder="••••••••••••">
+                        <button type="button" class="toggle-password" aria-label="Mostrar senha">
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                                <path d="M1 8s2.5-4.5 7-4.5S15 8 15 8s-2.5 4.5-7 4.5S1 8 1 8z" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+                                <circle cx="8" cy="8" r="2" stroke="currentColor" stroke-width="1.4"/>
+                                <line x1="2" y1="14" x2="14" y2="2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="row-between">
+                    <label class="remember">
+                        <input type="checkbox" id="lembrar" checked>
+                        <span>Lembrar usuário</span>
+                    </label>
+                    <a href="#" class="forgot">Esqueceu a senha?</a>
+                </div>
+
+                <button type="button" class="btn-login" id="btn-login">Login</button>
+
+                <div class="divider"><span>OU</span></div>
+
+                <div class="social-row">
+                    <button type="button" class="social" aria-label="Entrar com Facebook">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <path d="M22 12a10 10 0 1 0-11.5 9.88v-6.99H7.9V12h2.6V9.8c0-2.57 1.53-4 3.87-4 1.12 0 2.3.2 2.3.2v2.53h-1.3c-1.27 0-1.67.79-1.67 1.6V12h2.84l-.45 2.89h-2.39v6.99A10 10 0 0 0 22 12z" fill="#1877F2"/>
+                        </svg>
+                    </button>
+                    <button type="button" class="social" aria-label="Entrar com Google">
+                        <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M23.5 12.27c0-.79-.07-1.54-.2-2.27H12v4.3h6.47c-.28 1.5-1.13 2.77-2.41 3.62v3.01h3.5c2.05-1.89 3.25-4.69 3.25-7.96z" fill="#4285F4"/>
+                            <path d="M12 24c3.24 0 5.95-1.07 7.93-2.9l-3.5-3.01c-1.04.7-2.36 1.12-4.43 1.12-3.4 0-6.28-2.3-7.31-5.39H1.06v3.11C3.02 21.3 7.16 24 12 24z" fill="#34A853"/>
+                            <path d="M4.69 13.82A7.18 7.18 0 0 1 4.31 12c0-.63.11-1.25.31-1.82V7.07H1.06A11.94 11.94 0 0 0 0 12c0 1.93.46 3.76 1.27 5.39l3.43-2.65v-.92z" fill="#FBBC05"/>
+                            <path d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.1-3.1C17.95 1.18 15.24 0 12 0 7.16 0 3.02 2.7 1.06 7.07l3.63 2.83C5.72 7.06 8.6 4.75 12 4.75z" fill="#EA4335"/>
+                        </svg>
+                    </button>
+                    <button type="button" class="social" aria-label="Entrar com Apple">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <path d="M16.36 1c.1 1.13-.32 2.24-1.05 3.07-.74.85-1.93 1.5-3.07 1.41-.13-1.1.35-2.27 1.06-3.04C14.06.59 15.25.02 16.36 1zm4.27 16.45c-.6 1.32-.89 1.91-1.66 3.07-1.08 1.6-2.6 3.6-4.49 3.62-1.67.02-2.1-1.09-4.36-1.08-2.26.01-2.74 1.1-4.41 1.08-1.9-.02-3.33-1.81-4.41-3.41C-1.94 16.94-1.18 11 1.6 8.27c1.4-1.38 3.06-1.5 4.4-.69 1.05.64 1.78.66 2.85.02 1.47-.88 3.85-.99 5.45.5-3.1 1.9-2.6 6.7.33 9.35z" fill="#000"/>
+                        </svg>
+                    </button>
+                </div>
+
+                <p class="register">Não tem uma conta ainda? <a href="#" id="show-register">Registre-se</a></p>
+            </div>
+
+            <div id="register-section" class="login-card" style="display: none;">
+                <h1>Registro</h1>
+                <p class="subtitle">Preencha os dados para criar sua conta</p>
+
+                <div class="field">
+                    <label for="rnome">Nome</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="rnome" placeholder="Seu nome">
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label for="rcrp">CRP</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="rcrp" placeholder="Seu CRP">
+                    </div>
+                </div>
+
+
+
+                <div class="field">
+                    <label for="remail">E-mail</label>
+                    <div class="input-wrapper">
+                        <input type="email" id="remail" placeholder="example@gmail.com">
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label for="rsenha">Senha</label>
+                    <div class="input-wrapper">
+                        <input type="password" id="rsenha" placeholder="••••••••••••">
+                    </div>
+                </div>
+
+                <button type="button" class="btn-login" id="btn-register">Registrar</button>
+
+                <p class="register">Já tem uma conta? <a href="#" id="show-login">Faça Login</a></p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>Copyright @2026 - Psisoft</p>
+    </footer>
+
+    <script>
+        const loginSection = document.getElementById('login-section');
+        const registerSection = document.getElementById('register-section');
+        const showRegisterBtn = document.getElementById('show-register');
+        const showLoginBtn = document.getElementById('show-login');
+
+        showRegisterBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            loginSection.style.display = 'none';
+            registerSection.style.display = '';
+        });
+
+        showLoginBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            registerSection.style.display = 'none';
+            loginSection.style.display = '';
+        });
+
+        document.getElementById('btn-login').addEventListener('click', async () => {
+            const emailVal = document.getElementById('imail').value;
+            const senhaVal = document.getElementById('isenha').value;
+
+            try {
+                const res = await fetch('http://localhost:3000/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: emailVal, senha: senhaVal })
+                });
+
+                if (res.ok) {
+                    const data = await res.json();
+                    localStorage.setItem('token', data.token);
+                    if (data.usuario_id) {
+                        localStorage.setItem('psi_id', data.psicologo_id || data.usuario_id);
+                        localStorage.setItem('psi_nome', data.nome || '');
+                        localStorage.setItem('psi_crp', data.crp || '');
+                    }
+                    window.location.href = 'agendamentos.html';
+                } else {
+                    alert('Falha no login. Verifique suas credenciais.');
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Erro de conexão com o servidor.');
+            }
+        });
+
+        document.getElementById('btn-register').addEventListener('click', async () => {
+            const nomeVal = document.getElementById('rnome').value;
+            const crpVal = document.getElementById('rcrp').value;
+            const emailVal = document.getElementById('remail').value;
+            const senhaVal = document.getElementById('rsenha').value;
+
+            try {
+                const res = await fetch('http://localhost:3000/auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        nome: nomeVal, 
+                        crp: crpVal, 
+                        email: emailVal, 
+                        senha: senhaVal 
+                    })
+                });
+
+                if (res.ok) {
+                    alert('Registro concluído com sucesso! Faça login.');
+                    registerSection.style.display = 'none';
+                    loginSection.style.display = '';
+                } else {
+                    alert('Falha no registro.');
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Erro de conexão com o servidor.');
+            }
+        });
+    </script>
+</body>
+</html>
