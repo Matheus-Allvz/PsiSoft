@@ -31,3 +31,8 @@ yarn-error.log*
 
 # Added by cargo
 Cargo.lock
+
+# Ignorando arquivos temporários do front e UI prototypes gerados na task de Backend
+/docs/design/ui-prototypes/
+/frontend/cadastro-paciente.html
+/frontend/test_agendamento.html
