@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registro — Psisoft</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background-color: #e8e9f2;
+      padding: 24px;
+      position: relative;
+      z-index: 1;
+    }
+    body::before {
+      content: '';
+      position: fixed;
+      top: -50%; left: -50%; width: 200%; height: 200%;
+      background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0 L60 30 L30 60 L0 30 Z' fill='none' stroke='%239aa2c4' stroke-width='2'/%3E%3C/svg%3E");
+      background-size: 60px 60px;
+      transform: perspective(800px) rotateX(60deg) translateY(-100px);
+      z-index: -2;
+      pointer-events: none;
+    }
+    body::after {
+      content: '';
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: radial-gradient(ellipse at center, rgba(232,233,242,0) 20%, #e8e9f2 90%);
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+
+    .logo-text {
+      font-size: 20px;
+      font-weight: 600;
+      color: #1e2040;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 36px 40px;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: 0 4px 32px rgba(60, 70, 180, 0.08);
+    }
+
+    .card-title {
+      font-size: 22px;
+      font-weight: 700;
+      color: #1e2040;
+      text-align: center;
+      margin-bottom: 4px;
+    }
+
+    .card-sub {
+      font-size: 13px;
+      color: #9ca3af;
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    .field {
+      margin-bottom: 16px;
+    }
+
+    .field label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      color: #374151;
+      margin-bottom: 6px;
+    }
+
+    .input-wrap {
+      display: flex;
+      align-items: center;
+      border: 1.5px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 0 12px;
+      gap: 8px;
+      background: #fff;
+      transition: border-color .15s;
+    }
+
+    .input-wrap:focus-within {
+      border-color: #4f46e5;
+    }
+
+    .input-wrap svg {
+      flex-shrink: 0;
+      color: #9ca3af;
+    }
+
+    .input-wrap input {
+      flex: 1;
+      border: none;
+      outline: none;
+      font-family: inherit;
+      font-size: 13.5px;
+      color: #374151;
+      padding: 11px 0;
+      background: transparent;
+    }
+
+    .input-wrap input::placeholder {
+      color: #c0c4d0;
+    }
+
+    .eye-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #9ca3af;
+      padding: 0;
+      display: flex;
+      align-items: center;
+    }
+
+    .eye-btn:hover {
+      color: #6b7280;
+    }
+
+    .terms-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 18px 0 22px;
+    }
+
+    .terms-row input[type="checkbox"] {
+      accent-color: #4f46e5;
+      width: 15px;
+      height: 15px;
+      flex-shrink: 0;
+    }
+
+    .terms-row label {
+      font-size: 13px;
+      color: #374151;
+      cursor: pointer;
+    }
+
+    .terms-row a {
+      color: #4f46e5;
+      font-weight: 500;
+      text-decoration: none;
+    }
+
+    .terms-row a:hover {
+      text-decoration: underline;
+    }
+
+    .btn-primary {
+      width: 100%;
+      padding: 12px;
+      background: #3d4db7;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background .15s;
+    }
+
+    .btn-primary:hover {
+      background: #3344a8;
+    }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 20px 0;
+      color: #d1d5db;
+      font-size: 12px;
+    }
+
+    .divider::before,
+    .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: #e5e7eb;
+    }
+
+    .social-row {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      margin-bottom: 22px;
+    }
+
+    .social-btn {
+      width: 48px;
+      height: 48px;
+      border: 1.5px solid #e5e7eb;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      background: #fff;
+      transition: border-color .15s, box-shadow .15s;
+    }
+
+    .social-btn:hover {
+      border-color: #c0c4d0;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+    }
+
+    .bottom-link {
+      text-align: center;
+      font-size: 13px;
+      color: #6b7280;
+    }
+
+    .bottom-link a {
+      color: #4f46e5;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .bottom-link a:hover {
+      text-decoration: underline;
+    }
+
+    .footer {
+      margin-top: 28px;
+      font-size: 12px;
+      color: #9ca3af;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="logo">
+    <svg width="28" height="28" viewBox="0 0 26 26" fill="none">
+      <rect width="26" height="26" rx="7" fill="#2563eb" />
+      <path d="M7 13h4l2-4 2 8 2-4h2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+    </svg>
+    <span class="logo-text">Psisoft</span>
+  </div>
+
+  <div class="card">
+    <h1 class="card-title">Registre-se</h1>
+    <p class="card-sub">Faça registro em nosso sistema</p>
+
+    <form onsubmit="handleRegister(event)">
+      <div class="field">
+        <label for="nome">Nome Completo</label>
+        <div class="input-wrap">
+          <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+            <circle cx="7.5" cy="5" r="2.5" stroke="currentColor" stroke-width="1.4" />
+            <path d="M2.5 13c0-2.76 2.24-5 5-5s5 2.24 5 5" stroke="currentColor" stroke-width="1.4"
+              stroke-linecap="round" />
+          </svg>
+          <input id="nome" type="text" placeholder="Matheus Alves da Costa" required>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="email">Endereço de E-mail</label>
+        <div class="input-wrap">
+          <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+            <rect x="1.5" y="3" width="12" height="9" rx="1.5" stroke="currentColor" stroke-width="1.4" />
+            <path d="M1.5 5.5l6 4 6-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" />
+          </svg>
+          <input id="email" type="email" placeholder="matheuszin@gmail.com" required>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="senha">Senha</label>
+        <div class="input-wrap">
+          <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+            <rect x="3" y="6.5" width="9" height="7" rx="1.5" stroke="currentColor" stroke-width="1.4" />
+            <path d="M5 6.5V4.5a2.5 2.5 0 0 1 5 0v2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" />
+          </svg>
+          <input id="senha" type="password" placeholder="••••••••••••" required>
+          <button type="button" class="eye-btn" onclick="togglePass('senha', this)">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M1 8s2.5-5 7-5 7 5 7 5-2.5 5-7 5-7-5-7-5z" stroke="currentColor" stroke-width="1.4" />
+              <circle cx="8" cy="8" r="2" stroke="currentColor" stroke-width="1.4" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="confirmar">Confirme sua Senha</label>
+        <div class="input-wrap">
+          <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+            <rect x="3" y="6.5" width="9" height="7" rx="1.5" stroke="currentColor" stroke-width="1.4" />
+            <path d="M5 6.5V4.5a2.5 2.5 0 0 1 5 0v2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" />
+          </svg>
+          <input id="confirmar" type="password" placeholder="••••••••••••" required>
+          <button type="button" class="eye-btn" onclick="togglePass('confirmar', this)">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M1 8s2.5-5 7-5 7 5 7 5-2.5 5-7 5-7-5-7-5z" stroke="currentColor" stroke-width="1.4" />
+              <circle cx="8" cy="8" r="2" stroke="currentColor" stroke-width="1.4" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="terms-row">
+        <input type="checkbox" id="terms" required>
+        <label for="terms">Eu concordo com os <a href="#">Termos de Serviço</a></label>
+      </div>
+
+      <button type="submit" class="btn-primary">Registrar</button>
+    </form>
+
+    <div class="divider">OU</div>
+
+    <div class="social-row">
+      <!-- Facebook -->
+      <button class="social-btn" title="Facebook">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="#1877F2">
+          <path
+            d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047V9.413c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z" />
+        </svg>
+      </button>
+      <!-- Google -->
+      <button class="social-btn" title="Google">
+        <svg width="20" height="20" viewBox="0 0 24 24">
+          <path fill="#4285F4"
+            d="M23.745 12.27c0-.79-.07-1.54-.19-2.27h-11.3v4.51h6.47c-.29 1.48-1.14 2.73-2.4 3.58v3h3.86c2.26-2.09 3.56-5.17 3.56-8.82z" />
+          <path fill="#34A853"
+            d="M12.255 24c3.24 0 5.95-1.08 7.93-2.91l-3.86-3c-1.08.72-2.45 1.16-4.07 1.16-3.13 0-5.78-2.11-6.73-4.96h-3.98v3.09C3.515 21.3 7.615 24 12.255 24z" />
+          <path fill="#FBBC05"
+            d="M5.525 14.29c-.25-.72-.38-1.49-.38-2.29s.14-1.57.38-2.29V6.62h-3.98a11.86 11.86 0 0 0 0 10.76l3.98-3.09z" />
+          <path fill="#EA4335"
+            d="M12.255 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C18.205 1.19 15.495 0 12.255 0c-4.64 0-8.74 2.7-10.71 6.62l3.98 3.09c.95-2.85 3.6-4.96 6.73-4.96z" />
+        </svg>
+      </button>
+      <!-- Apple -->
+      <button class="social-btn" title="Apple">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="#000">
+          <path
+            d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z" />
+        </svg>
+      </button>
+    </div>
+
+    <p class="bottom-link">Já possui uma conta? Faça <a href="login.html">Login</a></p>
+  </div>
+
+  <p class="footer">Copyright @2026 – Psisoft</p>
+
+  <script>
+    function togglePass(id, btn) {
+      const input = document.getElementById(id);
+      const isHidden = input.type === 'password';
+      input.type = isHidden ? 'text' : 'password';
+      btn.style.opacity = isHidden ? '0.5' : '1';
+    }
+
+    function handleRegister(e) {
+      e.preventDefault();
+      const senha = document.getElementById('senha').value;
+      const confirmar = document.getElementById('confirmar').value;
+      if (senha !== confirmar) {
+        alert('As senhas não coincidem.');
+        return;
+      }
+      // Redireciona para login após registro
+      window.location.href = 'login.html';
+    }
+  </script>
+</body>
+
+</html>
