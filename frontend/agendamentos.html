@@ -619,7 +619,7 @@
     }
     
     try {
-      const response = await fetch(`http://localhost:3000/agendamentos/psicologos/${psi_id}/consultas?limit=50&offset=0`, {
+      const response = await fetch(`/api/agendamentos/psicologos/${psi_id}/consultas?limit=50&offset=0`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -688,7 +688,7 @@
   async function carregarPacientesDropdown() {
     if (!psi_id || !token) return;
     try {
-      const response = await fetch(`http://localhost:3000/pacientes/psicologos/${psi_id}/pacientes`, {
+      const response = await fetch(`/api/pacientes/psicologos/${psi_id}/pacientes`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (!response.ok) throw new Error('Falha ao buscar pacientes');
@@ -735,7 +735,7 @@
       };
       
       try {
-        const response = await fetch('http://localhost:3000/agendamentos/novo', {
+        const response = await fetch('/api/agendamentos/novo', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

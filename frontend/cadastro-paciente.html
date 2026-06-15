@@ -1516,7 +1516,7 @@
     if (telefone) payload.telefone = telefone;
 
     try {
-      const res = await fetch('http://localhost:3000/pacientes/novo', {
+      const res = await fetch('/api/pacientes/novo', {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',

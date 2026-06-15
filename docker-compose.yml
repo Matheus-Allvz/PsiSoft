@@ -1,6 +1,8 @@
+version: '3.8'
+
 services:
   db:
-    image: postgres:17-alpinel
+    image: postgres:17-alpine
     container_name: psisoft_db
     restart: always
     environment:
@@ -10,14 +12,37 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
-      - "5440:5432"
+      - "5432:5432"
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s
       timeout: 5s
       retries: 5
 
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: psisoft_backend
+    restart: always
+    environment:
+      DATABASE_URL: postgres://postgres:${DB_PASSWORD:-1322}@db:5432/psisoft
+      JWT_SECRET: ${JWT_SECRET:-sua_chave_secreta_aqui_123}
+    depends_on:
+      db:
+        condition: service_healthy
 
+  frontend:
+    image: caddy:alpine
+    container_name: psisoft_frontend
+    restart: always
+    ports:
+      - "8080:80"
+    volumes:
+      - ./frontend:/srv
+      - ./Caddyfile:/etc/caddy/Caddyfile
+    depends_on:
+      - backend
 
 volumes:
   postgres_data:

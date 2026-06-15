@@ -133,7 +133,7 @@
     }
     
     try {
-      const response = await fetch(`http://localhost:3000/pacientes/psicologos/${psi_id}/pacientes`, {
+      const response = await fetch(`/api/pacientes/psicologos/${psi_id}/pacientes`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       

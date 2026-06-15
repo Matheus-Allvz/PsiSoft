@@ -27,10 +27,6 @@ async fn main() -> anyhow::Result<()> {
         .connect(&database_url)
         .await?;
 
-    // Reset DB
-    sqlx::query("DROP SCHEMA public CASCADE;").execute(&db).await?;
-    sqlx::query("CREATE SCHEMA public;").execute(&db).await?;
-    
     // Run migrations
     sqlx::migrate!("./migrations")
         .run(&db)
