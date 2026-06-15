@@ -16,7 +16,7 @@
             <div class="logo-wrapper">
                 <img src="logos/logo com nome.png" alt="logo do software">
             </div>
-            <div class="login-card">
+            <div id="login-section" class="login-card">
                 <h1>Login</h1>
                 <p class="subtitle">Faça login com seu e-mail e senha abaixo</p>
 
@@ -57,7 +57,7 @@
                     <a href="#" class="forgot">Esqueceu a senha?</a>
                 </div>
 
-                <button type="button" class="btn-login">Login</button>
+                <button type="button" class="btn-login" id="btn-login">Login</button>
 
                 <div class="divider"><span>OU</span></div>
 
@@ -82,7 +82,46 @@
                     </button>
                 </div>
 
-                <p class="register">Não tem uma conta ainda? <a href="#">Registre-se</a></p>
+                <p class="register">Não tem uma conta ainda? <a href="#" id="show-register">Registre-se</a></p>
+            </div>
+
+            <div id="register-section" class="login-card" style="display: none;">
+                <h1>Registro</h1>
+                <p class="subtitle">Preencha os dados para criar sua conta</p>
+
+                <div class="field">
+                    <label for="rnome">Nome</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="rnome" placeholder="Seu nome">
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label for="rcrp">CRP</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="rcrp" placeholder="Seu CRP">
+                    </div>
+                </div>
+
+
+
+                <div class="field">
+                    <label for="remail">E-mail</label>
+                    <div class="input-wrapper">
+                        <input type="email" id="remail" placeholder="example@gmail.com">
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label for="rsenha">Senha</label>
+                    <div class="input-wrapper">
+                        <input type="password" id="rsenha" placeholder="••••••••••••">
+                    </div>
+                </div>
+
+                <button type="button" class="btn-login" id="btn-register">Registrar</button>
+
+                <p class="register">Já tem uma conta? <a href="#" id="show-login">Faça Login</a></p>
             </div>
         </section>
     </main>
@@ -90,5 +129,84 @@
     <footer>
         <p>Copyright @2026 - Psisoft</p>
     </footer>
+
+    <script>
+        const loginSection = document.getElementById('login-section');
+        const registerSection = document.getElementById('register-section');
+        const showRegisterBtn = document.getElementById('show-register');
+        const showLoginBtn = document.getElementById('show-login');
+
+        showRegisterBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            loginSection.style.display = 'none';
+            registerSection.style.display = '';
+        });
+
+        showLoginBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            registerSection.style.display = 'none';
+            loginSection.style.display = '';
+        });
+
+        document.getElementById('btn-login').addEventListener('click', async () => {
+            const emailVal = document.getElementById('imail').value;
+            const senhaVal = document.getElementById('isenha').value;
+
+            try {
+                const res = await fetch('http://localhost:3000/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: emailVal, senha: senhaVal })
+                });
+
+                if (res.ok) {
+                    const data = await res.json();
+                    localStorage.setItem('token', data.token);
+                    if (data.usuario_id) {
+                        localStorage.setItem('psi_id', data.psicologo_id || data.usuario_id);
+                        localStorage.setItem('psi_nome', data.nome || '');
+                        localStorage.setItem('psi_crp', data.crp || '');
+                    }
+                    window.location.href = 'agendamentos.html';
+                } else {
+                    alert('Falha no login. Verifique suas credenciais.');
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Erro de conexão com o servidor.');
+            }
+        });
+
+        document.getElementById('btn-register').addEventListener('click', async () => {
+            const nomeVal = document.getElementById('rnome').value;
+            const crpVal = document.getElementById('rcrp').value;
+            const emailVal = document.getElementById('remail').value;
+            const senhaVal = document.getElementById('rsenha').value;
+
+            try {
+                const res = await fetch('http://localhost:3000/auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        nome: nomeVal, 
+                        crp: crpVal, 
+                        email: emailVal, 
+                        senha: senhaVal 
+                    })
+                });
+
+                if (res.ok) {
+                    alert('Registro concluído com sucesso! Faça login.');
+                    registerSection.style.display = 'none';
+                    loginSection.style.display = '';
+                } else {
+                    alert('Falha no registro.');
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Erro de conexão com o servidor.');
+            }
+        });
+    </script>
 </body>
 </html>

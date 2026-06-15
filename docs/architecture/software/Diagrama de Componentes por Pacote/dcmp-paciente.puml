@@ -1,6 +1,6 @@
-@startuml dcmp-agendamento
+@startuml dcmp-paciente
 ' ============================================================
-' C3 - Component Diagram: Agendamento Module
+' C3 - Component Diagram: Paciente Module
 ' ============================================================
 
 skinparam defaultTextAlignment center
@@ -22,12 +22,12 @@ skinparam package {
 skinparam ArrowColor #444444
 skinparam linetype ortho
 
-package "Agendamento Module" {
-    interface "HTTP /novo, /{id}/cancelar, /psicologos/{id}/horarios, /psicologos/{id}/consultas" as API_IF
+package "Paciente Module" {
+    interface "HTTP /novo, /psicologos/{id}/pacientes" as API_IF
     
-    component "api::agendamento" as API <<axum Router>>
-    component "services::agendamento" as SERVICE <<Business Logic>>
-    component "domain::agendamento" as DOMAIN <<Models>>
+    component "api::paciente" as API <<axum Router>>
+    component "services::paciente" as SERVICE <<Business Logic>>
+    component "domain::paciente" as DOMAIN <<Models>>
     
     API_IF -down- API
     API -down-> SERVICE : uses
@@ -35,10 +35,12 @@ package "Agendamento Module" {
     SERVICE -down-> DOMAIN : uses
 }
 
-component "domain::user" as USER_DOMAIN <<Models>>
+component "services::auth" as AUTH_SERVICE <<Hash Password>>
+component "services::email" as EMAIL_SERVICE <<Resend>>
 database "PostgreSQL" as DB
 
 SERVICE -down-> DB : SQLx queries
-SERVICE -down-> USER_DOMAIN : uses (Psicologo)
+SERVICE -down-> AUTH_SERVICE : calls
+SERVICE -down-> EMAIL_SERVICE : calls
 
 @enduml

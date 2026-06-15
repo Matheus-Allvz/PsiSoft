@@ -16,22 +16,25 @@ use std::sync::Arc;
 #[derive(Debug, Deserialize)]
 pub struct RegisterRequest {
     pub nome: String,
-    pub login: String,
+    pub email: String,
     pub senha: String,
-    pub email: Option<String>,
     pub telefone: Option<String>,
     pub crp: String,
 }
 
 #[derive(Debug, Deserialize)]
 pub struct LoginRequest {
-    pub login: String,
+    pub email: String,
     pub senha: String,
 }
 
 #[derive(Debug, Serialize)]
 pub struct AuthResponse {
     pub token: String,
+    pub usuario_id: i32,
+    pub psicologo_id: i32,
+    pub nome: String,
+    pub crp: String,
 }
 
 pub struct AppState {
@@ -63,7 +66,7 @@ pub async fn register(
         "#
     )
     .bind(&payload.nome)
-    .bind(&payload.login)
+    .bind(&payload.email)
     .bind(&senha_hash)
     .bind(&payload.email)
     .bind(&payload.telefone)
@@ -110,10 +113,10 @@ pub async fn login(
         r#"
         SELECT id, nome, login, senha_hash, perfil, email, telefone, status
         FROM Usuario
-        WHERE login = $1
+        WHERE login = $1 OR email = $1
         "#
     )
-    .bind(&payload.login)
+    .bind(&payload.email)
     .fetch_optional(&state.db)
     .await
     .map_err(|e| {
@@ -128,10 +131,23 @@ pub async fn login(
 
     let token = generate_jwt(user.id);
 
+    // Fetch CRP and psicologo_id
+    let psi_row: Result<(i32, String), _> = sqlx::query_as(
+        "SELECT id, crp FROM Psicologo WHERE fk_usuario_id = $1"
+    )
+    .bind(user.id)
+    .fetch_one(&state.db)
+    .await;
+
+    let (psi_id, crp_val) = match psi_row {
+        Ok(r) => (r.0, r.1),
+        Err(_) => (0, "".to_string()),
+    };
+
     // Dispatch event
     let _ = state.event_bus.auth_tx.send(AuthEvent::LoginSuccess { user_id: user.id });
 
-    Ok(Json(AuthResponse { token }))
+    Ok(Json(AuthResponse { token, usuario_id: user.id, psicologo_id: psi_id, nome: user.nome, crp: crp_val }))
 }
 
 #[derive(Debug)]

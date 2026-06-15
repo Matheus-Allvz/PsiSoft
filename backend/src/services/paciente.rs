@@ -21,8 +21,8 @@ pub struct CadastroPacienteRequest {
     pub senha: Option<String>,
     pub nome: String,
     pub email: String,
-    pub cpf: String,
-    pub data_nascimento: NaiveDate,
+    pub cpf: Option<String>,
+    pub data_nascimento: Option<NaiveDate>,
     pub genero: Option<String>,
     pub estado_civil: Option<String>,
     pub telefone: Option<String>,
@@ -57,7 +57,11 @@ pub async fn cadastrar_paciente(
     let senha_pura = req.senha.clone().unwrap_or_else(|| "123456".to_string());
     let senha_hash = hash_password(&senha_pura);
 
-    let login = if !req.cpf.is_empty() { req.cpf.clone() } else { req.email.clone() };
+    let login = if let Some(cpf) = &req.cpf {
+        if !cpf.is_empty() { cpf.clone() } else { req.email.clone() }
+    } else {
+        req.email.clone()
+    };
 
     let usuario_id: i32 = sqlx::query_scalar(
         r#"
@@ -162,4 +166,35 @@ pub async fn cadastrar_paciente(
     });
 
     Ok(paciente_id)
+}
+
+#[derive(Debug, Serialize, sqlx::FromRow)]
+pub struct PacienteResponse {
+    pub id: i32,
+    pub nome: String,
+    pub cpf: Option<String>,
+    pub data_nascimento: Option<NaiveDate>,
+    pub telefone: Option<String>,
+    pub email: Option<String>,
+}
+
+pub async fn listar_pacientes(
+    pool: &PgPool,
+    fk_psicologo_id: i32,
+) -> Result<Vec<PacienteResponse>, PacienteError> {
+    let pacientes = sqlx::query_as!(
+        PacienteResponse,
+        r#"
+        SELECT p.id, p.nome, p.cpf, p.data_nascimento, p.telefone, u.email
+        FROM Paciente p
+        JOIN Usuario u ON p.fk_usuario_id = u.id
+        WHERE p.fk_psicologo_id = $1
+        ORDER BY p.nome ASC
+        "#,
+        fk_psicologo_id
+    )
+    .fetch_all(pool)
+    .await?;
+
+    Ok(pacientes)
 }

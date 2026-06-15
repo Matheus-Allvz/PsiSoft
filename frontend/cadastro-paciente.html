@@ -1,0 +1,1573 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Psisoft – Cadastro de Paciente</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --blue-900: #1a2b5e;
+    --blue-700: #2d4cc8;
+    --blue-600: #3b5bdb;
+    --blue-500: #4c6ef5;
+    --blue-100: #e8ecfd;
+    --blue-50:  #f0f3ff;
+    --teal-500: #12b886;
+    --teal-100: #d3f9d8;
+    --red-500:  #fa5252;
+    --red-100:  #ffe3e3;
+    --amber-500: #fd7e14;
+    --amber-100: #fff3bf;
+    --gray-900: #1c1c1e;
+    --gray-700: #374151;
+    --gray-500: #6b7280;
+    --gray-400: #9ca3af;
+    --gray-200: #e5e7eb;
+    --gray-100: #f3f4f6;
+    --gray-50:  #f9fafb;
+    --white:    #ffffff;
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 16px;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.04);
+    --shadow-md: 0 4px 16px rgba(0,0,0,.10);
+    --shadow-lg: 0 8px 32px rgba(0,0,0,.12);
+  }
+
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background: var(--gray-50);
+    color: var(--gray-900);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── TOP BAR ── */
+  .topbar {
+    background: var(--white);
+    border-bottom: 1px solid var(--gray-200);
+    padding: 0 32px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: var(--shadow-sm);
+  }
+  .topbar-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+  }
+  .brand-icon {
+    width: 34px;
+    height: 34px;
+  }
+  .brand-name {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--blue-700);
+    letter-spacing: -.3px;
+  }
+  .topbar-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--gray-500);
+  }
+  .topbar-meta span { color: var(--gray-700); font-weight: 500; }
+
+  /* ── LAYOUT ── */
+  .page {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 0;
+  }
+
+  /* ── PROGRESS SIDEBAR ── */
+  .sidebar {
+    background: var(--white);
+    border-right: 1px solid var(--gray-200);
+    padding: 32px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+  .sidebar-title {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--gray-400);
+    margin-bottom: 24px;
+  }
+  .step-list { display: flex; flex-direction: column; gap: 0; }
+  .step-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 12px 0;
+    position: relative;
+    cursor: pointer;
+  }
+  .step-item:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    left: 15px;
+    top: 44px;
+    width: 2px;
+    height: calc(100% - 20px);
+    background: var(--gray-200);
+  }
+  .step-item.completed::after { background: var(--blue-600); }
+  .step-dot {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 2px solid var(--gray-200);
+    background: var(--white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray-400);
+    flex-shrink: 0;
+    transition: all .2s;
+    position: relative;
+    z-index: 1;
+  }
+  .step-item.active .step-dot {
+    background: var(--blue-600);
+    border-color: var(--blue-600);
+    color: var(--white);
+    box-shadow: 0 0 0 4px var(--blue-100);
+  }
+  .step-item.completed .step-dot {
+    background: var(--teal-500);
+    border-color: var(--teal-500);
+    color: var(--white);
+  }
+  .step-info { padding-top: 4px; }
+  .step-label {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--gray-500);
+    line-height: 1.3;
+  }
+  .step-item.active .step-label { color: var(--blue-700); font-weight: 600; }
+  .step-item.completed .step-label { color: var(--teal-500); }
+  .step-sub {
+    font-size: 11px;
+    color: var(--gray-400);
+    margin-top: 2px;
+  }
+
+  .sidebar-footer {
+    margin-top: auto;
+    padding-top: 32px;
+    border-top: 1px solid var(--gray-100);
+  }
+  .sidebar-info {
+    background: var(--blue-50);
+    border: 1px solid var(--blue-100);
+    border-radius: var(--radius-md);
+    padding: 14px;
+  }
+  .sidebar-info-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--blue-700);
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .sidebar-info p {
+    font-size: 11.5px;
+    color: var(--gray-600, #4b5563);
+    line-height: 1.55;
+  }
+
+  /* ── MAIN CONTENT ── */
+  .main {
+    padding: 36px 48px;
+    overflow-y: auto;
+  }
+  .form-header {
+    margin-bottom: 32px;
+  }
+  .form-header h1 {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--gray-900);
+    letter-spacing: -.3px;
+  }
+  .form-header p {
+    font-size: 14px;
+    color: var(--gray-500);
+    margin-top: 4px;
+  }
+
+  /* ── CARD ── */
+  .card {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-lg);
+    padding: 28px 32px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow-sm);
+  }
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--gray-100);
+  }
+  .card-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+  .card-icon.blue   { background: var(--blue-100); }
+  .card-icon.teal   { background: var(--teal-100); }
+  .card-icon.amber  { background: var(--amber-100); }
+  .card-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--gray-900);
+  }
+  .card-subtitle {
+    font-size: 12.5px;
+    color: var(--gray-500);
+    margin-top: 2px;
+  }
+
+  /* ── FORM GRID ── */
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px 24px;
+  }
+  .form-grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+  .form-grid.cols-1 { grid-template-columns: 1fr; }
+  .col-span-2 { grid-column: span 2; }
+  .col-span-3 { grid-column: span 3; }
+
+  .field { display: flex; flex-direction: column; gap: 6px; }
+  .field label {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--gray-700);
+  }
+  .field label .req { color: var(--red-500); margin-left: 2px; }
+  .field label .opt {
+    font-size: 11px;
+    font-weight: 400;
+    color: var(--gray-400);
+    margin-left: 4px;
+  }
+
+  .input-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+  .input-icon {
+    position: absolute;
+    left: 12px;
+    color: var(--gray-400);
+    font-size: 15px;
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+  }
+  .input-wrap input,
+  .input-wrap select,
+  .input-wrap textarea {
+    width: 100%;
+    height: 40px;
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-sm);
+    font-family: inherit;
+    font-size: 13.5px;
+    color: var(--gray-900);
+    background: var(--white);
+    padding: 0 12px 0 38px;
+    transition: border-color .15s, box-shadow .15s;
+    outline: none;
+    appearance: none;
+  }
+  .input-wrap.no-icon input,
+  .input-wrap.no-icon select,
+  .input-wrap.no-icon textarea { padding-left: 12px; }
+  .input-wrap textarea {
+    height: auto;
+    min-height: 80px;
+    padding-top: 10px;
+    resize: vertical;
+  }
+  .input-wrap input::placeholder,
+  .input-wrap select::placeholder,
+  .input-wrap textarea::placeholder { color: var(--gray-400); }
+  .input-wrap input:focus,
+  .input-wrap select:focus,
+  .input-wrap textarea:focus {
+    border-color: var(--blue-500);
+    box-shadow: 0 0 0 3px rgba(75,110,245,.12);
+  }
+  .input-wrap input.error,
+  .input-wrap select.error { border-color: var(--red-500); }
+  .input-wrap input.error:focus,
+  .input-wrap select.error:focus { box-shadow: 0 0 0 3px rgba(250,82,82,.12); }
+  .input-wrap input.valid { border-color: var(--teal-500); }
+  .select-caret {
+    position: absolute;
+    right: 12px;
+    color: var(--gray-400);
+    pointer-events: none;
+    font-size: 11px;
+  }
+  .field-hint {
+    font-size: 11.5px;
+    color: var(--gray-400);
+    margin-top: 2px;
+  }
+  .field-error {
+    font-size: 11.5px;
+    color: var(--red-500);
+    margin-top: 2px;
+    display: none;
+  }
+  .field-error.visible { display: block; }
+
+  /* ── TOGGLE (minor) ── */
+  .toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px;
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+  }
+  .toggle-row label {
+    font-size: 13.5px;
+    font-weight: 500;
+    color: var(--gray-700);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .toggle-row p {
+    font-size: 12px;
+    color: var(--gray-500);
+    margin-top: 2px;
+    padding-left: 22px;
+  }
+  .toggle-switch {
+    width: 40px;
+    height: 22px;
+    border-radius: 99px;
+    background: var(--gray-200);
+    position: relative;
+    transition: background .2s;
+    flex-shrink: 0;
+    cursor: pointer;
+  }
+  .toggle-switch::after {
+    content: '';
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--white);
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    transition: left .2s;
+    box-shadow: var(--shadow-sm);
+  }
+  .toggle-switch.on { background: var(--blue-600); }
+  .toggle-switch.on::after { left: 21px; }
+
+  /* ── TCLE ── */
+  .tcle-box {
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+  }
+  .tcle-header {
+    background: var(--gray-50);
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--gray-200);
+  }
+  .tcle-header span {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray-700);
+    text-transform: uppercase;
+    letter-spacing: .06em;
+  }
+  .tcle-badge {
+    font-size: 11px;
+    background: var(--amber-100);
+    color: var(--amber-500);
+    padding: 2px 8px;
+    border-radius: 99px;
+    font-weight: 600;
+  }
+  .tcle-body {
+    padding: 20px;
+    max-height: 260px;
+    overflow-y: auto;
+    font-size: 13px;
+    color: var(--gray-700);
+    line-height: 1.7;
+    background: var(--white);
+  }
+  .tcle-body h4 {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--gray-900);
+    margin: 14px 0 6px;
+  }
+  .tcle-body h4:first-child { margin-top: 0; }
+  .tcle-body ul { padding-left: 18px; }
+  .tcle-body ul li { margin-bottom: 4px; }
+  .tcle-scroll-indicator {
+    text-align: center;
+    padding: 10px;
+    background: var(--gray-50);
+    border-top: 1px solid var(--gray-200);
+    font-size: 12px;
+    color: var(--gray-400);
+  }
+
+  /* ── CONSENT CHECK ── */
+  .consent-checks { display: flex; flex-direction: column; gap: 12px; margin-top: 18px; }
+  .check-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 16px;
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: border-color .15s, background .15s;
+  }
+  .check-row:hover { background: var(--gray-50); border-color: var(--blue-500); }
+  .check-row.checked { background: var(--blue-50); border-color: var(--blue-500); }
+  .check-box {
+    width: 18px;
+    height: 18px;
+    border: 2px solid var(--gray-300);
+    border-radius: 4px;
+    flex-shrink: 0;
+    margin-top: 1px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--white);
+    transition: all .15s;
+  }
+  .check-row.checked .check-box {
+    background: var(--blue-600);
+    border-color: var(--blue-600);
+  }
+  .check-row.checked .check-box::after {
+    content: '✓';
+    color: var(--white);
+    font-size: 11px;
+    font-weight: 700;
+  }
+  .check-row input[type="checkbox"] { display: none; }
+  .check-text { flex: 1; }
+  .check-text strong {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--gray-800);
+  }
+  .check-text span {
+    font-size: 12px;
+    color: var(--gray-500);
+    line-height: 1.5;
+    display: block;
+    margin-top: 3px;
+  }
+
+  /* ── SIGNATURE ── */
+  .signature-area {
+    margin-top: 18px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .sig-method {
+    border: 1.5px solid var(--gray-200);
+    border-radius: var(--radius-md);
+    padding: 16px;
+    cursor: pointer;
+    text-align: center;
+    transition: all .15s;
+  }
+  .sig-method:hover { border-color: var(--blue-500); background: var(--blue-50); }
+  .sig-method.selected { border-color: var(--blue-600); background: var(--blue-50); }
+  .sig-icon { font-size: 26px; margin-bottom: 8px; }
+  .sig-title { font-size: 13px; font-weight: 600; color: var(--gray-700); }
+  .sig-desc { font-size: 11.5px; color: var(--gray-400); margin-top: 4px; }
+
+  /* ── STATUS TAG ── */
+  .status-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 10px;
+    border-radius: 99px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .status-tag.pending  { background: var(--amber-100); color: var(--amber-500); }
+  .status-tag.ok       { background: var(--teal-100);  color: var(--teal-500); }
+
+  /* ── RADIO PILLS ── */
+  .radio-pills { display: flex; gap: 8px; flex-wrap: wrap; }
+  .radio-pill {
+    padding: 7px 16px;
+    border: 1.5px solid var(--gray-200);
+    border-radius: 99px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--gray-600, #4b5563);
+    cursor: pointer;
+    transition: all .15s;
+    background: var(--white);
+  }
+  .radio-pill:hover { border-color: var(--blue-500); color: var(--blue-600); }
+  .radio-pill.active {
+    background: var(--blue-600);
+    border-color: var(--blue-600);
+    color: var(--white);
+  }
+  .radio-pill input { display: none; }
+
+  /* ── NOTIFICATION METHOD ── */
+  .notif-options {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-top: 4px;
+  }
+  .notif-card {
+    border: 1.5px solid var(--gray-200);
+    border-radius: var(--radius-md);
+    padding: 12px;
+    cursor: pointer;
+    text-align: center;
+    transition: all .15s;
+  }
+  .notif-card:hover { border-color: var(--blue-500); background: var(--blue-50); }
+  .notif-card.selected { border-color: var(--blue-600); background: var(--blue-50); }
+  .notif-card .n-icon { font-size: 20px; margin-bottom: 6px; }
+  .notif-card .n-label { font-size: 12px; font-weight: 600; color: var(--gray-700); }
+  .notif-card .n-sub { font-size: 11px; color: var(--gray-400); margin-top: 2px; }
+
+  /* ── SECTION DIVIDER ── */
+  .section-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 4px 0 16px;
+  }
+  .section-divider span {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--gray-400);
+    white-space: nowrap;
+  }
+  .section-divider::before,
+  .section-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--gray-200);
+  }
+
+  /* ── FOOTER ACTIONS ── */
+  .form-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 0 8px;
+    border-top: 1px solid var(--gray-100);
+    margin-top: 8px;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 20px;
+    height: 40px;
+    border-radius: var(--radius-md);
+    font-family: inherit;
+    font-size: 13.5px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: all .15s;
+    text-decoration: none;
+  }
+  .btn-primary {
+    background: var(--blue-700);
+    color: var(--white);
+  }
+  .btn-primary:hover { background: var(--blue-900); box-shadow: var(--shadow-md); }
+  .btn-ghost {
+    background: transparent;
+    color: var(--gray-500);
+    border: 1.5px solid var(--gray-200);
+  }
+  .btn-ghost:hover { background: var(--gray-100); color: var(--gray-700); }
+  .btn-outline {
+    background: transparent;
+    color: var(--blue-600);
+    border: 1.5px solid var(--blue-200);
+  }
+  .btn-outline:hover { background: var(--blue-50); }
+  .btn-danger {
+    background: transparent;
+    color: var(--red-500);
+    border: 1.5px solid var(--red-100);
+  }
+  .btn-danger:hover { background: var(--red-100); }
+
+  .btn-lg { height: 44px; padding: 0 28px; font-size: 14px; }
+
+  /* ── ALERT ── */
+  .alert {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 12px 16px;
+    border-radius: var(--radius-md);
+    font-size: 13px;
+    line-height: 1.5;
+    margin-bottom: 20px;
+  }
+  .alert-info  { background: var(--blue-50);  border: 1px solid var(--blue-100);  color: var(--blue-700); }
+  .alert-warn  { background: var(--amber-100); border: 1px solid #ffe599; color: #7c5a00; }
+  .alert-ok    { background: var(--teal-100);  border: 1px solid #b2f2bb; color: #276346; }
+  .alert-icon  { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+
+  /* ── MINOR SECTION (conditional) ── */
+  .minor-section {
+    border: 1.5px dashed var(--amber-500);
+    border-radius: var(--radius-md);
+    padding: 20px;
+    background: #fffdf0;
+    display: none;
+  }
+  .minor-section.visible { display: block; }
+  .minor-section-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--amber-500);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  /* ── SUMMARY PANEL ── */
+  .summary-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .summary-item {
+    background: var(--gray-50);
+    border-radius: var(--radius-md);
+    padding: 14px;
+  }
+  .summary-item .s-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .07em;
+    color: var(--gray-400);
+    margin-bottom: 4px;
+  }
+  .summary-item .s-value {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--gray-900);
+  }
+  .summary-item .s-value.pending { color: var(--amber-500); }
+  .summary-item .s-value.ok      { color: var(--teal-500);  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 900px) {
+    .page { grid-template-columns: 1fr; }
+    .sidebar { border-right: none; border-bottom: 1px solid var(--gray-200); }
+    .step-list { flex-direction: row; overflow-x: auto; gap: 8px; }
+    .step-item::after { display: none; }
+    .main { padding: 24px 20px; }
+    .form-grid { grid-template-columns: 1fr; }
+    .form-grid.cols-3 { grid-template-columns: 1fr; }
+    .col-span-2, .col-span-3 { grid-column: span 1; }
+    .signature-area { grid-template-columns: 1fr; }
+    .summary-grid { grid-template-columns: 1fr; }
+    .notif-options { grid-template-columns: 1fr; }
+  }
+
+  /* Scrollbar for TCLE */
+  .tcle-body::-webkit-scrollbar { width: 5px; }
+  .tcle-body::-webkit-scrollbar-track { background: var(--gray-100); }
+  .tcle-body::-webkit-scrollbar-thumb { background: var(--gray-300); border-radius: 9px; }
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<header class="topbar">
+  <a href="#" class="topbar-brand">
+    <svg class="brand-icon" viewBox="0 0 34 34" fill="none">
+      <rect width="34" height="34" rx="8" fill="#2d4cc8"/>
+      <path d="M17 7c-2.8 0-5.2 1.5-6.5 3.8C8.2 12 8 14 8 17c0 4.9 4 8.9 9 8.9s9-4 9-8.9c0-3 .2-4.9-2.5-6.2C22.2 8.5 19.8 7 17 7z" fill="white" opacity=".9"/>
+      <circle cx="17" cy="17" r="4" fill="#2d4cc8"/>
+      <path d="M14 17h6M17 14v6" stroke="white" stroke-width="2" stroke-linecap="round"/>
+    </svg>
+    <span class="brand-name">Psisoft</span>
+  </a>
+  <div class="topbar-meta">
+    <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+    Registrando como <span id="logged-user-info">Carregando...</span>
+  </div>
+</header>
+
+<div class="page">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-title">Etapas do Cadastro</div>
+    <div class="step-list">
+      <div class="step-item active" onclick="goStep(1)">
+        <div class="step-dot">1</div>
+        <div class="step-info">
+          <div class="step-label">Identificação</div>
+          <div class="step-sub">Dados pessoais</div>
+        </div>
+      </div>
+      <div class="step-item" onclick="goStep(2)">
+        <div class="step-dot">2</div>
+        <div class="step-info">
+          <div class="step-label">Contato e Acesso</div>
+          <div class="step-sub">E-mail, telefone, notificações</div>
+        </div>
+      </div>
+      <div class="step-item" onclick="goStep(3)">
+        <div class="step-dot">3</div>
+        <div class="step-info">
+          <div class="step-label">TCLE</div>
+          <div class="step-sub">Consentimento informado</div>
+        </div>
+      </div>
+      <div class="step-item" onclick="goStep(4)">
+        <div class="step-dot">4</div>
+        <div class="step-info">
+          <div class="step-label">Revisão</div>
+          <div class="step-sub">Confirmar e cadastrar</div>
+        </div>
+      </div>
+    </div>
+    <div class="sidebar-footer">
+      <div class="sidebar-info">
+        <div class="sidebar-info-title">
+          <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          LGPD &amp; CFP
+        </div>
+        <p>Dados criptografados em repouso. O TCLE é obrigatório antes de qualquer registro clínico (Res. 001/2009). Prazo de guarda: 5 anos.</p>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- ═══ STEP 1: IDENTIFICAÇÃO ═══ -->
+    <div id="step1" class="step-panel" style="display:none;">
+      <div class="form-header">
+        <h1>Dados de Identificação</h1>
+        <p>Campos com <span style="color:var(--red-500)">*</span> são obrigatórios pelo CFP (Resolução 001/2009)</p>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon blue">👤</div>
+          <div>
+            <div class="card-title">Dados Pessoais</div>
+            <div class="card-subtitle">Informações de identificação do paciente</div>
+          </div>
+        </div>
+        <div class="form-grid">
+          <div class="field col-span-2">
+            <label>Nome Completo <span class="req">*</span></label>
+            <div class="input-wrap">
+              <span class="input-icon">
+                <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+              </span>
+              <input type="text" id="nome" placeholder="Nome completo conforme RG ou CNH" />
+            </div>
+          </div>
+
+          <div class="field">
+            <label>CPF <span class="req">*</span></label>
+            <div class="input-wrap">
+              <span class="input-icon">🪪</span>
+              <input type="text" id="cpf" placeholder="000.000.000-00" maxlength="14" />
+            </div>
+            <div class="field-hint">Usado para unicidade no sistema</div>
+            <div class="field-error" id="cpf-err">CPF já cadastrado. <a href="#" style="color:var(--blue-600)">Ver perfil existente</a></div>
+          </div>
+
+          <div class="field">
+            <label>Data de Nascimento <span class="req">*</span></label>
+            <div class="input-wrap">
+              <span class="input-icon">📅</span>
+              <input type="date" id="nascimento" />
+            </div>
+            <div class="field-hint">Pacientes menores de 18 anos exigem responsável legal</div>
+          </div>
+
+          <div class="field">
+            <label>Gênero <span class="opt">(opcional)</span></label>
+            <div class="input-wrap">
+              <span class="input-icon">
+                <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="11" r="4"/><path d="M12 15v6M9 18h6"/></svg>
+              </span>
+              <select id="genero">
+                <option value="">Selecionar</option>
+                <option>Masculino</option>
+                <option>Feminino</option>
+                <option>Não-binário</option>
+                <option>Prefiro não informar</option>
+              </select>
+              <span class="select-caret">▾</span>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Estado Civil <span class="opt">(opcional)</span></label>
+            <div class="input-wrap">
+              <span class="input-icon">💍</span>
+              <select>
+                <option value="">Selecionar</option>
+                <option>Solteiro(a)</option>
+                <option>Casado(a)</option>
+                <option>Divorciado(a)</option>
+                <option>Viúvo(a)</option>
+                <option>União Estável</option>
+              </select>
+              <span class="select-caret">▾</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Minor section -->
+        <div style="margin-top:20px">
+          <div class="section-divider"><span>Paciente Menor de Idade</span></div>
+          <div class="toggle-row" onclick="toggleMinor()">
+            <div>
+              <label>
+                <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="color:var(--amber-500)"><path d="M12 9v4m0 4h.01"/><circle cx="12" cy="12" r="9"/></svg>
+                Este paciente é menor de 18 anos
+              </label>
+              <p>Ativa o campo de responsável legal obrigatório (RN-04)</p>
+            </div>
+            <div class="toggle-switch" id="minor-toggle"></div>
+          </div>
+
+          <div class="minor-section" id="minor-section" style="margin-top:14px">
+            <div class="minor-section-title">⚠️ Dados do Responsável Legal</div>
+            <div class="form-grid">
+              <div class="field col-span-2">
+                <label>Nome do Responsável <span class="req">*</span></label>
+                <div class="input-wrap">
+                  <span class="input-icon">
+                    <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+                  </span>
+                  <input type="text" placeholder="Nome completo do responsável legal" />
+                </div>
+              </div>
+              <div class="field">
+                <label>CPF do Responsável <span class="req">*</span></label>
+                <div class="input-wrap">
+                  <span class="input-icon">🪪</span>
+                  <input type="text" placeholder="000.000.000-00" maxlength="14" />
+                </div>
+              </div>
+              <div class="field">
+                <label>Parentesco <span class="req">*</span></label>
+                <div class="input-wrap">
+                  <span class="input-icon">👨‍👧</span>
+                  <select>
+                    <option value="">Selecionar</option>
+                    <option>Pai</option>
+                    <option>Mãe</option>
+                    <option>Avô/Avó</option>
+                    <option>Tutor(a) Legal</option>
+                    <option>Outro</option>
+                  </select>
+                  <span class="select-caret">▾</span>
+                </div>
+              </div>
+              <div class="field">
+                <label>E-mail do Responsável <span class="req">*</span></label>
+                <div class="input-wrap">
+                  <span class="input-icon">✉️</span>
+                  <input type="email" placeholder="email@exemplo.com.br" />
+                </div>
+              </div>
+              <div class="field">
+                <label>Telefone do Responsável <span class="req">*</span></label>
+                <div class="input-wrap">
+                  <span class="input-icon">📱</span>
+                  <input type="tel" placeholder="(00) 00000-0000" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button class="btn btn-ghost" onclick="window.history.back()">
+          ← Cancelar
+        </button>
+        <button class="btn btn-primary btn-lg" onclick="goStep(2)">
+          Continuar → Contato
+        </button>
+      </div>
+    </div>
+
+    <!-- ═══ STEP 2: CONTATO E ACESSO ═══ -->
+    <div id="step2" class="step-panel">
+      <div class="form-header">
+        <h1>Contato e Configurações de Acesso</h1>
+        <p>As credenciais de acesso ao portal serão enviadas automaticamente após o cadastro</p>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon blue">✉️</div>
+          <div>
+            <div class="card-title">Dados de Contato</div>
+            <div class="card-subtitle">Usados para envio de credenciais e lembretes de consulta</div>
+          </div>
+        </div>
+        <div class="form-grid">
+          <div class="field">
+            <label>E-mail <span class="req">*</span></label>
+            <div class="input-wrap">
+              <span class="input-icon">✉️</span>
+              <input type="email" id="email" placeholder="paciente@email.com.br" />
+            </div>
+            <div class="field-hint">Credenciais de acesso serão enviadas aqui</div>
+          </div>
+          <div class="field">
+            <label>Confirmar E-mail <span class="req">*</span></label>
+            <div class="input-wrap">
+              <span class="input-icon">✉️</span>
+              <input type="email" placeholder="Repita o e-mail" />
+            </div>
+          </div>
+          <div class="field">
+            <label>Telefone / WhatsApp <span class="req">*</span></label>
+            <div class="input-wrap">
+              <span class="input-icon">📱</span>
+              <input type="tel" placeholder="(62) 99999-0000" />
+            </div>
+          </div>
+          <div class="field">
+            <label>Telefone Alternativo <span class="opt">(opcional)</span></label>
+            <div class="input-wrap">
+              <span class="input-icon">📞</span>
+              <input type="tel" placeholder="(62) 3333-0000" />
+            </div>
+          </div>
+
+          <div class="field col-span-2">
+            <label>Endereço <span class="opt">(opcional)</span></label>
+            <div class="input-wrap">
+              <span class="input-icon">📍</span>
+              <input type="text" placeholder="Logradouro, número, bairro — cidade/UF" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon teal">🔔</div>
+          <div>
+            <div class="card-title">Notificações</div>
+            <div class="card-subtitle">Canal preferencial para lembretes e confirmações de consulta</div>
+          </div>
+        </div>
+
+        <div class="alert alert-info">
+          <span class="alert-icon">ℹ️</span>
+          Notificações conterão apenas dados administrativos (data, hora, link). Dados clínicos nunca são enviados por canais externos (RN-02).
+        </div>
+
+        <label style="font-size:13px;font-weight:500;color:var(--gray-700);display:block;margin-bottom:10px">Canal de preferência <span class="req">*</span></label>
+        <div class="notif-options">
+          <div class="notif-card selected" onclick="selectNotif(this)">
+            <div class="n-icon">💬</div>
+            <div class="n-label">WhatsApp</div>
+            <div class="n-sub">Lembretes e links</div>
+          </div>
+          <div class="notif-card" onclick="selectNotif(this)">
+            <div class="n-icon">✉️</div>
+            <div class="n-label">E-mail</div>
+            <div class="n-sub">Confirmações e documentos</div>
+          </div>
+          <div class="notif-card" onclick="selectNotif(this)">
+            <div class="n-icon">🔔</div>
+            <div class="n-label">Ambos</div>
+            <div class="n-sub">WhatsApp + E-mail</div>
+          </div>
+        </div>
+
+        <div style="margin-top:20px">
+          <div class="section-divider"><span>Modalidade de Atendimento</span></div>
+          <div class="radio-pills">
+            <label class="radio-pill active" onclick="setPill(this)">
+              <input type="radio" name="modalidade" value="Presencial" checked /> 🏥 Presencial
+            </label>
+            <label class="radio-pill" onclick="setPill(this)">
+              <input type="radio" name="modalidade" value="Online" /> 💻 Online
+            </label>
+            <label class="radio-pill" onclick="setPill(this)">
+              <input type="radio" name="modalidade" value="Hibrido" /> 🔄 Ambos
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button class="btn btn-ghost" onclick="goStep(1)">← Voltar</button>
+        <button class="btn btn-primary btn-lg" onclick="goStep(3)">Continuar → TCLE</button>
+      </div>
+    </div>
+
+    <!-- ═══ STEP 3: TCLE ═══ -->
+    <div id="step3" class="step-panel" style="display:none;">
+      <div class="form-header">
+        <h1>Termo de Consentimento Livre e Esclarecido</h1>
+        <p>O TCLE deve ser lido e aceito pelo paciente antes de qualquer registro clínico</p>
+      </div>
+
+      <div class="alert alert-warn">
+        <span class="alert-icon">⚠️</span>
+        <div>
+          <strong style="display:block;margin-bottom:2px">Nenhuma funcionalidade clínica é liberada até a assinatura do TCLE.</strong>
+          Leia o termo completo com o paciente e registre o aceite. O log de consentimento é imutável (LGPD Art. 37).
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon amber">📋</div>
+          <div>
+            <div class="card-title">Termo de Consentimento Livre e Esclarecido (TCLE)</div>
+            <div class="card-subtitle">PsiSoft – Plataforma de Gestão para Saúde Mental · Versão 2.1 · Jun/2026</div>
+          </div>
+          <span class="status-tag pending" style="margin-left:auto">⏳ Pendente</span>
+        </div>
+
+        <div class="tcle-box">
+          <div class="tcle-header">
+            <span>Texto do Termo</span>
+            <span class="tcle-badge">Leitura obrigatória</span>
+          </div>
+          <div class="tcle-body" id="tcle-scroll" onscroll="checkScroll(this)">
+            <h4>1. Identificação e Finalidade</h4>
+            <p>Este Termo de Consentimento Livre e Esclarecido (TCLE) é apresentado pela plataforma <strong>PsiSoft</strong>, operada pela empresa XPTO Tecnologia em Saúde Ltda., CNPJ 00.000.000/0001-00, com sede em Goiânia/GO, doravante denominada <em>Controladora de Dados</em>.</p>
+            <p>A coleta e o tratamento dos dados pessoais e sensíveis de saúde aqui descritos têm como finalidade exclusiva <strong>viabilizar o atendimento psicológico online e presencial</strong>, o gerenciamento de prontuário eletrônico, a comunicação sobre agendamentos e o cumprimento das obrigações legais e éticas da profissão.</p>
+
+            <h4>2. Dados Coletados e Base Legal</h4>
+            <p>Serão coletados os seguintes dados, com base legal no Art. 11, II, "f" da LGPD (tratamento de saúde):</p>
+            <ul>
+              <li>Dados de identificação: nome, CPF, data de nascimento, endereço.</li>
+              <li>Dados de contato: e-mail, telefone/WhatsApp.</li>
+              <li>Dados sensíveis de saúde: prontuário clínico, evoluções de sessão, auto-registros, documentos psicológicos e histórico de agendamentos.</li>
+              <li>Dados técnicos: IP de acesso, data/hora de autenticação.</li>
+            </ul>
+
+            <h4>3. Compartilhamento de Dados</h4>
+            <p>Seus dados <strong>não são vendidos</strong> a terceiros. Podem ser compartilhados apenas com: (a) o psicólogo responsável pelo atendimento; (b) serviços de notificação (WhatsApp Business/e-mail) <em>exclusivamente para dados administrativos</em>; (c) autoridades competentes quando exigido por lei.</p>
+
+            <h4>4. Segurança e Prazo de Guarda</h4>
+            <p>Todos os dados são criptografados em repouso (AES-256) e em trânsito (TLS 1.3). O prontuário eletrônico é mantido por <strong>no mínimo 5 anos</strong> após o último atendimento, conforme Resolução CFP 001/2009, mesmo após eventual encerramento do vínculo terapêutico.</p>
+
+            <h4>5. Direitos do Titular (LGPD Art. 18)</h4>
+            <p>Você tem direito a: confirmar a existência de tratamento; acessar seus dados; corrigir dados incompletos ou inexatos; solicitar anonimização ou bloqueio; portabilidade do prontuário (UC12); revogar o consentimento a qualquer momento.</p>
+            <p>Para exercer seus direitos, acesse <strong>Configurações → Privacidade e Meus Dados</strong> ou envie solicitação para privacidade@psisoft.com.br.</p>
+
+            <h4>6. Uso de Inteligência Artificial</h4>
+            <p>A plataforma oferece, de forma <em>opcional</em>, transcrição automática de sessões por IA e um chatbot de apoio entre sessões. O uso de ambos requer consentimento explícito e separado do paciente. Nenhum registro de IA substitui o julgamento clínico do psicólogo responsável.</p>
+
+            <h4>7. Canal de Contato e DPO</h4>
+            <p>Em caso de dúvidas sobre privacidade ou para exercer seus direitos: <strong>dpo@psisoft.com.br</strong> | (62) 3000-0000. Encarregado de Dados (DPO): Ana Paula Mendes.</p>
+
+            <h4>8. Declaração de Ciência</h4>
+            <p>Ao assinar este termo, declaro que li e compreendi todas as informações acima, que tive a oportunidade de esclarecer dúvidas com o(a) psicólogo(a) responsável, e que consinto <strong>livre e voluntariamente</strong> com o tratamento dos meus dados para as finalidades descritas.</p>
+          </div>
+          <div class="tcle-scroll-indicator" id="scroll-hint">
+            ↓ Role para ler o termo completo antes de assinar
+          </div>
+        </div>
+
+        <!-- CONSENT CHECKS -->
+        <div class="consent-checks">
+          <div class="check-row" onclick="toggleCheck(this)">
+            <input type="checkbox" class="check-input" />
+            <div class="check-box"></div>
+            <div class="check-text">
+              <strong>Li e compreendi o TCLE na íntegra</strong>
+              <span>Confirmo que tive acesso ao texto completo e oportunidade de esclarecer dúvidas</span>
+            </div>
+          </div>
+          <div class="check-row" onclick="toggleCheck(this)">
+            <input type="checkbox" class="check-input" />
+            <div class="check-box"></div>
+            <div class="check-text">
+              <strong>Consinto com o tratamento de dados para atendimento psicológico</strong>
+              <span>Autorizo a coleta e uso dos meus dados pessoais e sensíveis de saúde conforme descrito</span>
+            </div>
+          </div>
+          <div class="check-row" onclick="toggleCheck(this)">
+            <input type="checkbox" class="check-input" />
+            <div class="check-box"></div>
+            <div class="check-text">
+              <strong>Autorizo o envio de notificações administrativas via WhatsApp / e-mail</strong>
+              <span>Lembretes de consulta, confirmações e links de atendimento — sem conteúdo clínico</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- OPTIONAL AI consent -->
+        <div style="margin-top:16px">
+          <div class="section-divider"><span>Consentimentos Opcionais</span></div>
+          <div class="check-row" onclick="toggleCheck(this)" style="border-color:var(--gray-200)">
+            <input type="checkbox" class="check-input" />
+            <div class="check-box"></div>
+            <div class="check-text">
+              <strong>Autorizo transcrição automática de sessões por IA <span style="color:var(--gray-400);font-weight:400">(opcional)</span></strong>
+              <span>O rascunho gerado pela IA é revisado e editado pelo psicólogo antes de ser salvo no prontuário; o rascunho original é descartado (RNF-06)</span>
+            </div>
+          </div>
+          <div class="check-row" onclick="toggleCheck(this)" style="border-color:var(--gray-200);margin-top:10px">
+            <input type="checkbox" class="check-input" />
+            <div class="check-box"></div>
+            <div class="check-text">
+              <strong>Autorizo uso do Chatbot de Apoio entre sessões <span style="color:var(--gray-400);font-weight:400">(opcional)</span></strong>
+              <span>Ferramenta de suporte emocional sob supervisão do psicólogo; não substitui atendimento clínico (UC10)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- SIGNATURE METHOD -->
+        <div style="margin-top:20px">
+          <div class="section-divider"><span>Método de Assinatura</span></div>
+          <div class="signature-area">
+            <div class="sig-method selected" onclick="selectSig(this)">
+              <div class="sig-icon">✅</div>
+              <div class="sig-title">Aceite em Tela</div>
+              <div class="sig-desc">Confirmação por senha + registro de IP e timestamp</div>
+            </div>
+            <div class="sig-method" onclick="selectSig(this)">
+              <div class="sig-icon">📧</div>
+              <div class="sig-title">Link por E-mail</div>
+              <div class="sig-desc">TCLE enviado ao paciente para assinatura assíncrona</div>
+            </div>
+          </div>
+
+          <div style="margin-top:16px" id="sig-password-area">
+            <div class="alert alert-ok" style="margin-bottom:0">
+              <span class="alert-icon">🔒</span>
+              <div>O aceite será registrado com <strong>data, hora, IP do dispositivo e identificação do assinante</strong> em log imutável, conforme LGPD Art. 37.</div>
+            </div>
+            <div class="form-grid" style="margin-top:14px">
+              <div class="field">
+                <label>Senha de Confirmação <span class="req">*</span></label>
+                <div class="input-wrap">
+                  <span class="input-icon">🔐</span>
+                  <input type="password" placeholder="Senha do paciente no sistema" />
+                </div>
+                <div class="field-hint">O paciente receberá a senha por e-mail após o cadastro</div>
+              </div>
+              <div class="field">
+                <label>Confirmar Senha <span class="req">*</span></label>
+                <div class="input-wrap">
+                  <span class="input-icon">🔐</span>
+                  <input type="password" placeholder="Repita a senha" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button class="btn btn-ghost" onclick="goStep(2)">← Voltar</button>
+        <button class="btn btn-primary btn-lg" onclick="goStep(4)">Continuar → Revisão</button>
+      </div>
+    </div>
+
+    <!-- ═══ STEP 4: REVISÃO ═══ -->
+    <div id="step4" class="step-panel" style="display:none;">
+      <div class="form-header">
+        <h1>Revisão e Confirmação</h1>
+        <p>Verifique os dados antes de finalizar o cadastro</p>
+      </div>
+
+      <div class="alert alert-ok">
+        <span class="alert-icon">✅</span>
+        <div>Tudo certo! Após confirmar, o paciente receberá as credenciais de acesso ao portal por e-mail e será notificado sobre o TCLE registrado.</div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon blue">👤</div>
+          <div>
+            <div class="card-title">Identificação</div>
+          </div>
+          <button class="btn btn-ghost" style="margin-left:auto;height:32px;font-size:12px" onclick="goStep(1)">✏️ Editar</button>
+        </div>
+        <div class="summary-grid">
+          <div class="summary-item"><div class="s-label">Nome Completo</div><div class="s-value" id="rev-nome">--</div></div>
+          <div class="summary-item"><div class="s-label">CPF</div><div class="s-value" id="rev-cpf">--</div></div>
+          <div class="summary-item"><div class="s-label">Data de Nascimento</div><div class="s-value" id="rev-nasc">--</div></div>
+          <div class="summary-item"><div class="s-label">Gênero</div><div class="s-value" id="rev-gen">--</div></div>
+          <div class="summary-item"><div class="s-label">Responsável Legal</div><div class="s-value" style="color:var(--gray-400)">Não aplicável</div></div>
+          <div class="summary-item"><div class="s-label">Estado Civil</div><div class="s-value" id="rev-estado">--</div></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon teal">📞</div>
+          <div><div class="card-title">Contato e Notificações</div></div>
+          <button class="btn btn-ghost" style="margin-left:auto;height:32px;font-size:12px" onclick="goStep(2)">✏️ Editar</button>
+        </div>
+        <div class="summary-grid">
+          <div class="summary-item"><div class="s-label">E-mail</div><div class="s-value" id="rev-email">--</div></div>
+          <div class="summary-item"><div class="s-label">Telefone</div><div class="s-value" id="rev-tel">--</div></div>
+          <div class="summary-item"><div class="s-label">Canal de Notificação</div><div class="s-value" id="rev-canal">--</div></div>
+          <div class="summary-item"><div class="s-label">Modalidade</div><div class="s-value" id="rev-mod">--</div></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon amber">📋</div>
+          <div><div class="card-title">TCLE e Consentimento</div></div>
+          <button class="btn btn-ghost" style="margin-left:auto;height:32px;font-size:12px" onclick="goStep(3)">✏️ Editar</button>
+        </div>
+        <div class="summary-grid">
+          <div class="summary-item">
+            <div class="s-label">TCLE Principal</div>
+            <div class="s-value ok">✓ Aceito em Tela</div>
+          </div>
+          <div class="summary-item">
+            <div class="s-label">Método de Assinatura</div>
+            <div class="s-value">Aceite em Tela + Senha</div>
+          </div>
+          <div class="summary-item">
+            <div class="s-label">Transcrição por IA</div>
+            <div class="s-value pending">Não autorizado</div>
+          </div>
+          <div class="summary-item">
+            <div class="s-label">Chatbot de Apoio</div>
+            <div class="s-value pending">Não autorizado</div>
+          </div>
+        </div>
+
+        <div class="alert alert-info" style="margin-top:18px;margin-bottom:0">
+          <span class="alert-icon">🔒</span>
+          <div>O log de consentimento será gerado com timestamp, IP e identificação do assinante. Imutável e auditável conforme LGPD Art. 37. Prontuário mantido por <strong>mínimo 5 anos</strong>.</div>
+        </div>
+      </div>
+
+      <!-- Ações finais -->
+      <div class="form-actions" style="flex-direction:column;align-items:stretch;gap:12px">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <button class="btn btn-ghost" onclick="goStep(3)">← Voltar</button>
+          <div style="display:flex;gap:10px">
+            <button class="btn btn-danger" onclick="confirmCancel()">✕ Cancelar</button>
+            <button class="btn btn-primary btn-lg" onclick="submitForm()">
+              ✓ Confirmar Cadastro
+            </button>
+          </div>
+        </div>
+        <p style="font-size:12px;color:var(--gray-400);text-align:right">
+          Ao confirmar, um e-mail com credenciais de acesso será enviado automaticamente ao paciente.
+        </p>
+      </div>
+    </div>
+
+    <!-- ═══ SUCCESS ═══ -->
+    <div id="step-success" class="step-panel" style="display:none;text-align:center;padding:60px 0">
+      <div style="font-size:56px;margin-bottom:20px">🎉</div>
+      <h1 style="font-size:24px;font-weight:700;color:var(--gray-900);margin-bottom:8px">Paciente Cadastrado com Sucesso!</h1>
+      <p style="color:var(--gray-500);font-size:15px;max-width:420px;margin:0 auto 32px">
+        Maria Fernanda Lima foi cadastrada. As credenciais de acesso foram enviadas para ma••••@gmail.com e o TCLE foi registrado em log imutável.
+      </p>
+      <div style="display:inline-flex;flex-direction:column;align-items:center;gap:12px;background:var(--gray-50);border:1px solid var(--gray-200);border-radius:var(--radius-lg);padding:24px 32px;margin-bottom:36px">
+        <div style="display:flex;align-items:center;gap:10px;font-size:14px;font-weight:600;color:var(--teal-500)">
+          <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>
+          Prontuário eletrônico criado
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;font-size:14px;font-weight:600;color:var(--teal-500)">
+          <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>
+          TCLE assinado e logado
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;font-size:14px;font-weight:600;color:var(--teal-500)">
+          <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>
+          Credenciais enviadas por e-mail
+        </div>
+      </div>
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+        <button class="btn btn-outline btn-lg" onclick="goStep(1)">+ Novo Cadastro</button>
+        <button class="btn btn-primary btn-lg" onclick="window.location.href='agendamentos.html'">Ir para Agendamentos →</button>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+  let currentStep = 1;
+  let isMinor = false;
+
+  function goStep(n) {
+    if (n === 4) preencherRevisao(); // Antes de ir para a revisão, preenchemos os dados
+
+    document.querySelectorAll('.step-panel').forEach(p => p.style.display = 'none');
+    const panel = document.getElementById('step' + n) || document.getElementById('step-success');
+    if (panel) panel.style.display = 'block';
+    currentStep = n;
+    updateSidebar();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function preencherRevisao() {
+    const nome = document.getElementById('nome') ? document.getElementById('nome').value : '';
+    const cpf = document.getElementById('cpf') ? document.getElementById('cpf').value : '';
+    const nasc = document.getElementById('nascimento') ? document.getElementById('nascimento').value : '';
+    const email = document.getElementById('email') ? document.getElementById('email').value : '';
+    const tel = document.querySelector('input[type="tel"]') ? document.querySelector('input[type="tel"]').value : '';
+    
+    const canalEl = document.querySelector('.notif-card.selected .n-label');
+    const modEl = document.querySelector('input[name="modalidade"]:checked');
+    const genEl = document.querySelector('select'); // Assumindo que o primeiro select é gênero (ou podemos buscar de forma mais robusta)
+
+    if(document.getElementById('rev-nome')) document.getElementById('rev-nome').textContent = nome || 'Não informado';
+    if(document.getElementById('rev-cpf')) document.getElementById('rev-cpf').textContent = cpf || 'Não informado';
+    if(document.getElementById('rev-nasc')) document.getElementById('rev-nasc').textContent = nasc || 'Não informado';
+    if(document.getElementById('rev-email')) document.getElementById('rev-email').textContent = email || 'Não informado';
+    if(document.getElementById('rev-tel')) document.getElementById('rev-tel').textContent = tel || 'Não informado';
+    if(document.getElementById('rev-canal')) document.getElementById('rev-canal').textContent = canalEl ? canalEl.textContent.trim() : 'WhatsApp';
+    if(document.getElementById('rev-mod')) document.getElementById('rev-mod').textContent = modEl ? modEl.value : 'Presencial';
+  }
+
+  function updateSidebar() {
+    const items = document.querySelectorAll('.step-item');
+    items.forEach((item, idx) => {
+      const stepNum = idx + 1;
+      item.classList.remove('active', 'completed');
+      if (stepNum < currentStep) item.classList.add('completed');
+      else if (stepNum === currentStep) item.classList.add('active');
+
+      // Update dot
+      const dot = item.querySelector('.step-dot');
+      if (stepNum < currentStep) dot.textContent = '✓';
+      else dot.textContent = stepNum;
+    });
+  }
+
+  function toggleMinor() {
+    isMinor = !isMinor;
+    document.getElementById('minor-toggle').classList.toggle('on', isMinor);
+    const section = document.getElementById('minor-section');
+    section.classList.toggle('visible', isMinor);
+  }
+
+  function toggleCheck(row) {
+    row.classList.toggle('checked');
+    const inp = row.querySelector('.check-input');
+    if (inp) inp.checked = row.classList.contains('checked');
+  }
+
+  function selectNotif(card) {
+    document.querySelectorAll('.notif-card').forEach(c => c.classList.remove('selected'));
+    card.classList.add('selected');
+  }
+
+  function setPill(pill) {
+    document.querySelectorAll('.radio-pill').forEach(p => p.classList.remove('active'));
+    pill.classList.add('active');
+  }
+
+  function selectSig(method) {
+    document.querySelectorAll('.sig-method').forEach(m => m.classList.remove('selected'));
+    method.classList.add('selected');
+  }
+
+  function checkScroll(el) {
+    const hint = document.getElementById('scroll-hint');
+    if (el.scrollTop + el.clientHeight >= el.scrollHeight - 10) {
+      if (hint) hint.textContent = '✓ Documento lido por completo';
+    }
+  }
+
+  async function submitForm() {
+    const psiId = localStorage.getItem('psi_id') || 1;
+    const token = localStorage.getItem('token') || '';
+
+    const nome = document.getElementById('nome') ? document.getElementById('nome').value.trim() : "";
+    const email = document.getElementById('email') ? document.getElementById('email').value.trim() : "";
+    const rawCpf = document.getElementById('cpf') ? document.getElementById('cpf').value : "";
+    const cpf = rawCpf.replace(/\D/g, '');
+    const data_nascimento = document.getElementById('nascimento') ? document.getElementById('nascimento').value : "";
+    
+    const telInput = document.querySelector('input[type="tel"]');
+    const rawTel = telInput ? telInput.value : "";
+    const telefone = rawTel.replace(/\D/g, '');
+
+    // -- Validações de Frontend --
+    if (!nome) {
+      alert("Por favor, preencha pelo menos o Nome do paciente.");
+      return;
+    }
+
+    if (cpf && cpf.length !== 11) {
+      alert("O CPF deve conter exatamente 11 dígitos numéricos.");
+      return;
+    }
+
+    if (data_nascimento) {
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(data_nascimento)) {
+        alert("Formato de data de nascimento inválido.");
+        return;
+      }
+      const year = parseInt(data_nascimento.split('-')[0], 10);
+      if (year < 1900 || year > new Date().getFullYear()) {
+        alert("Por favor, insira um ano de nascimento válido (ex: 1990).");
+        return;
+      }
+    }
+    // ----------------------------
+
+    const canalEl = document.querySelector('.notif-card.selected .n-label');
+    let rawCanal = canalEl ? canalEl.textContent.trim() : "WhatsApp";
+    if (rawCanal === "E-mail") rawCanal = "Email";
+    if (rawCanal === "Ambos") rawCanal = "WhatsApp"; // Fallback já que a API só aceita 1
+
+    const modEl = document.querySelector('input[name="modalidade"]:checked');
+    const config_modalidade = modEl ? modEl.value : "Presencial";
+
+    const payload = {
+      fk_psicologo_id: parseInt(psiId),
+      senha: "senha_provisoria",
+      nome,
+      email,
+      config_canal: rawCanal,
+      config_modalidade
+    };
+
+    if (cpf) payload.cpf = cpf;
+    if (data_nascimento) payload.data_nascimento = data_nascimento;
+    if (telefone) payload.telefone = telefone;
+
+    try {
+      const res = await fetch('http://localhost:3000/pacientes/novo', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (!res.ok) {
+        throw new Error(`Falha no cadastro (Status ${res.status})`);
+      }
+
+      document.querySelectorAll('.step-panel').forEach(p => p.style.display = 'none');
+      document.getElementById('step-success').style.display = 'block';
+      document.querySelectorAll('.step-item').forEach(i => i.classList.add('completed'));
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } catch (e) {
+      alert('Erro ao cadastrar paciente: ' + e.message);
+    }
+  }
+
+  function confirmCancel() {
+    if (confirm('Tem certeza que deseja cancelar o cadastro? Nenhum dado será salvo.')) {
+      goStep(1);
+    }
+  }
+
+  // CPF mask e Init
+  document.addEventListener('DOMContentLoaded', () => {
+    // Info do user logado
+    const psiNome = localStorage.getItem('psi_nome');
+    const psiCrp = localStorage.getItem('psi_crp');
+    if (psiNome) {
+      document.getElementById('logged-user-info').innerHTML = `Dr(a). ${psiNome}&nbsp;·&nbsp;CRP ${psiCrp || 'Não informado'}`;
+    }
+
+    // Exibir primeiro step
+    goStep(1);
+
+    const cpf = document.getElementById('cpf');
+    if (cpf) {
+      cpf.addEventListener('input', e => {
+        let v = e.target.value.replace(/\D/g, '');
+        v = v.replace(/(\d{3})(\d)/, '$1.$2')
+             .replace(/(\d{3})(\d)/, '$1.$2')
+             .replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+        e.target.value = v;
+      });
+    }
+    updateSidebar();
+  });
+</script>
+</body>
+</html>

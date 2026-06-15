@@ -4,66 +4,50 @@
 
 Esta seção detalha os contratos de operação do sistema PsiSoft, elaborados de acordo com as diretrizes do Capítulo 11 da obra *Applying UML and Patterns* (Craig Larman). O objetivo destes contratos é descrever o comportamento do sistema de forma declarativa, focando estritamente nas mudanças de estado do Modelo de Domínio (instâncias criadas, associações formadas e atributos modificados), desvinculando o design da implementação algorítmica.
 
-Nesta versão, as assinaturas das operações foram fortificadas utilizando a tipagem real da linguagem **Rust**, garantindo maior aderência ao código (ex: `uuid::Uuid`, `chrono::DateTime<Utc>`, `String`, `bool`, `rust_decimal::Decimal`). Conforme a padronização arquitetural exigida, todas as **Pós-condições** estão descritas no tempo verbal passado.
+Nesta versão, as assinaturas das operações foram fortificadas utilizando a tipagem real da linguagem **Rust**, garantindo maior aderência ao código (ex: `i32`, `NaiveDateTime`, `String`, `bool`, `ModalidadeConsulta`). Conforme a padronização arquitetural exigida, todas as **Pós-condições** estão descritas no tempo verbal passado.
 
 ---
 
-### Contrato de Operação 01: Autenticação de Usuário (Login)
+### Contrato de Operação 01: Cadastrar Paciente
 
-* **Operação:** `authenticate(email: String, password: String) -> Result<String, AuthError>`
+* **Operação:** `cadastrar_paciente(pool: &PgPool, req: CadastroPacienteRequest) -> Result<i32, PacienteError>`
 * **Referências Cruzadas:** 
-  * Casos de Uso: Login na Plataforma.
-  * Módulos (C2/C3): API, Services (Auth), Domain (User).
+  * Casos de Uso: Cadastro de Pacientes.
+  * Módulos (C2/C3): API (`api::paciente`), Services (`services::paciente`), UI (`cadastro-paciente.html`).
 * **Pré-condições:**
-  * Deve existir uma instância de `User` no banco de dados (`Sqlx`) cujo atributo `email` corresponda exatamente ao parâmetro `email`.
-  * A senha fornecida em `password`, ao passar pela função de verificação criptográfica (Argon2), deve coincidir com o `password_hash` da instância de `User` encontrada.
+  * Deve existir uma instância de `Psicologo` cujo identificador (`id`) corresponda a `req.fk_psicologo_id`.
 * **Pós-condições:**
-  * Uma nova sessão virtual de usuário (representada criptograficamente por um Token JWT) **foi gerada**.
-  * O atributo `last_login_at` (do tipo `chrono::DateTime<Utc>`) da instância de `User` **foi alterado** para o timestamp atual do servidor.
+  * Uma nova instância *u* de `Usuario` **foi criada**.
+  * O atributo *u.perfil* **tornou-se** `'paciente'`.
+  * O atributo *u.senha_hash* **tornou-se** o hash criptográfico gerado a partir de `req.senha` (ou `'123456'` caso omitida).
+  * O atributo *u.login* **tornou-se** o valor de `req.cpf` (se não vazio) ou o valor de `req.email`.
+  * Uma nova instância *p* de `Paciente` **foi criada**.
+  * Uma associação **foi formada** entre a instância *p* e a instância *u* (`fk_usuario_id`).
+  * Uma associação **foi formada** entre a instância *p* e a instância existente de `Psicologo` (`req.fk_psicologo_id`).
+  * Se `req.responsavel_nome` foi fornecido, uma nova instância *r* de `ResponsavelLegal` **foi criada** e uma associação **foi formada** entre *r* e *p*.
+  * Uma nova instância *c* de `ConfiguracaoPaciente` **foi criada** com base em `req.config_canal` e `req.config_modalidade` e associada a *p*.
+  * Uma nova instância *co* de `ConsentimentoPaciente` **foi criada** e associada a *p*, com o atributo `data_hora_aceite` definido para o momento exato da transação.
+  * O disparo assíncrono de um e-mail de boas-vindas contendo as credenciais **foi agendado** (Spawn Tokio).
+
+---
+
+### Contrato de Operação 02: Marcar Agendamento
+
+* **Operação:** `criar_agendamento(pool: &PgPool, fk_paciente_id: i32, fk_psicologo_id: i32, data_hora: NaiveDateTime, modalidade: ModalidadeConsulta) -> Result<Consulta, AgendamentoError>`
+* **Referências Cruzadas:** 
+  * Casos de Uso: Agendamento de Consultas.
+  * Módulos (C2/C3): API (`api::agendamento`), Services (`services::agendamento`), UI (`agendamentos.html`).
+* **Pré-condições:**
+  * Deve existir uma instância de `Paciente` com `id` igual a `fk_paciente_id`.
+  * Deve existir uma instância de `Psicologo` com `fk_usuario_id` igual a `fk_psicologo_id`.
+  * Se o parâmetro `modalidade` for `ModalidadeConsulta::Online`, o atributo `validador_epsi` da instância de `Psicologo` encontrada não pode estar nulo (Deve ter sido validado para consultas online).
+  * A agenda do `Psicologo` não deve possuir nenhuma instância de `Consulta` na mesma `data_hora` cujo atributo `status` seja diferente de `'Cancelada'` (Garantia de ausência de conflito de horário).
+* **Pós-condições:**
+  * Uma nova instância *c* de `Consulta` **foi criada**.
+  * O atributo *c.data_hora* **tornou-se** o valor recebido no parâmetro `data_hora`.
+  * O atributo *c.modalidade* **tornou-se** o valor recebido no parâmetro `modalidade`.
+  * O atributo *c.status* **tornou-se** `StatusConsulta::Agendada`.
+  * Uma associação (Chave Estrangeira do BD) **foi formada** entre a instância *c* e a instância referenciada de `Psicologo` (`fk_psicologo_id`).
+  * Uma associação **foi formada** entre a instância *c* e a instância referenciada de `Paciente` (`fk_paciente_id`).
 * **Regras de Negócio Associadas:** 
-  * Senhas nunca devem ser trafegadas ou armazenadas em texto plano.
-  * Em caso de credenciais inválidas, a operação deve retornar um erro, e o estado do sistema não sofre alterações.
-
----
-
-### Contrato de Operação 02: Registro Inicial de Agendamento
-
-* **Operação:** `criar_agendamento(id_psicologo: uuid::Uuid, id_paciente: uuid::Uuid, data_hora: chrono::DateTime<Utc>, modalidade: String) -> Result<uuid::Uuid, AgendamentoError>`
-* **Referências Cruzadas:** 
-  * Casos de Uso: Agendamento Autônomo.
-  * Módulos (C2/C3): API, Services (Agendamento), Domain (Consulta).
-* **Pré-condições:**
-  * Deve existir uma instância de `Psicologo` cujo identificador seja `id_psicologo` (tipo `uuid::Uuid`) com status ativo.
-  * Deve existir uma instância de `Paciente` cujo identificador seja `id_paciente` (tipo `uuid::Uuid`).
-  * A agenda do `Psicologo` não deve possuir nenhuma instância de `Agendamento` na mesma `data_hora` cujo atributo `status` (tipo `String` ou enum) seja diferente de `'Cancelado'`.
-* **Pós-condições:**
-  * Uma nova instância *a* de `Agendamento` **foi criada**.
-  * O atributo *a.id* **tornou-se** um novo identificador único (`uuid::Uuid`).
-  * O atributo *a.data_hora* **tornou-se** o valor recebido no parâmetro `data_hora`.
-  * O atributo *a.status* **tornou-se** a string `'Pendente'`.
-  * O atributo *a.modalidade* **tornou-se** o valor recebido no parâmetro `modalidade`.
-  * Uma associação (Chave Estrangeira do BD) **foi formada** entre a instância *a* e a instância existente de `Psicologo`.
-  * Uma associação **foi formada** entre a instância *a* e a instância existente de `Paciente`.
-* **Regras de Negócio Associadas:** 
-  * O agendamento inicial é sempre criado como bloqueado e aguarda a finalização e aprovação do gateway de pagamento para efetivação definitiva.
-
----
-
-### Contrato de Operação 03: Efetivação de Agendamento (Pagamento Webhook)
-
-* **Operação:** `confirmar_pagamento(id_agendamento: uuid::Uuid, id_transacao: String, valor_pago: rust_decimal::Decimal) -> Result<(), PagamentoError>`
-* **Referências Cruzadas:** 
-  * Casos de Uso: Confirmação de Pagamento, Notificações.
-  * Módulos (C2/C3): API, Services, Domain, Events.
-* **Pré-condições:**
-  * Deve existir uma instância de `Agendamento` correspondente a `id_agendamento` e que possua o status atual `'Pendente'`.
-  * A assinatura criptográfica do Webhook do gateway (no header HTTP validado pelo Axum) deve ser autêntica.
-* **Pós-condições:**
-  * Uma nova instância *p* de `Pagamento` **foi criada**.
-  * O atributo *p.id_transacao* **tornou-se** o valor do parâmetro `id_transacao`.
-  * O atributo *p.valor* **tornou-se** o valor recebido em `valor_pago`.
-  * O atributo *p.quitado* (tipo `bool`) **tornou-se** `true`.
-  * Uma associação **foi formada** entre a instância *p* (`Pagamento`) e a instância referenciada de `Agendamento`.
-  * O atributo *status* da instância associada de `Agendamento` **foi alterado** de `'Pendente'` para `'Confirmado'`.
-* **Eventos Disparados:**
-  * A confirmação do agendamento aciona a camada `Events` (Tokio) para o disparo assíncrono de notificações via WhatsApp (API da Meta) e atualização SSE na UI.
+  * O sistema impede agendamentos simultâneos e valida obrigatoriamente a certificação E-PSI do Conselho de Psicologia para atendimentos na modalidade online.

@@ -2,9 +2,9 @@
 
 Este documento descreve os fluxos de implementação detalhados para os principais casos de uso do sistema PsiSoft, mapeando a interação desde a interface do usuário até o banco de dados. A arquitetura de implementação segue o modelo em camadas do Rust: **Axum (Handlers / API)** -> **Service (Lógica de Negócios)** -> **Sqlx (Repositório / Banco de Dados)**.
 
-### 4.1 Fluxo de Autenticação (Login)
+### 4.1 Cadastrar Paciente
 
-Este diagrama detalha o processo de login de um usuário na plataforma.
+Este diagrama detalha o processo completo de cadastro de um novo paciente, rastreado a partir de `cadastro-paciente.html` invocando a API Rust Axum.
 
 ```plantuml
 @startuml
@@ -16,41 +16,51 @@ skinparam sequence {
     ArrowColor DarkBlue
 }
 
-actor "Usuário" as User
-participant "Frontend UI\n(HTML/JS)" as UI
-participant "Axum Handler\n(api::auth_handler)" as Handler
-participant "Service\n(services::auth_service)" as Service
-participant "Sqlx Repository\n(domain::user_repo)" as Repo
-database "PostgreSQL" as DB
+actor "Usuário/Psicólogo" as User
+participant "cadastro-paciente.html\n(Frontend)" as UI
+participant "Axum Router\n(api::paciente)" as Router
+participant "API Handler\n(create_paciente_handler)" as Handler
+participant "Service\n(services::paciente)" as Service
+database "PostgreSQL\n(PgPool)" as DB
 
-User -> UI : Preenche e-mail e senha
-UI -> Handler : POST /api/auth/login (JSON)
+User -> UI : Preenche dados e clica em Salvar
+UI -> Router : POST http://localhost:3000/pacientes/novo\n(JSON: CadastroPacienteRequest)
+Router -> Handler : Delega para create_paciente_handler
 activate Handler
-    Handler -> Service : authenticate(email, password)
+    Handler -> Service : cadastrar_paciente(&state.db, payload)
     activate Service
-        Service -> Repo : find_by_email(email)
-        activate Repo
-            Repo -> DB : SELECT * FROM users WHERE email = $1
-            DB --> Repo : Retorna registro do usuário
-            Repo --> Service : User entity
-        deactivate Repo
+        Service -> DB : pool.begin() (Abre transação)
+        Service -> Service : hash_password(senha ou "123456")
         
-        Service -> Service : verifica_hash(password, hash)
-        Service -> Service : gerar_jwt(user.id)
+        Service -> DB : INSERT INTO Usuario (nome, login, senha_hash, perfil...)\nRETURNING id
+        DB --> Service : usuario_id
         
-        Service --> Handler : Retorna Token JWT
+        Service -> DB : INSERT INTO Paciente (fk_usuario_id, fk_psicologo_id...)\nRETURNING id
+        DB --> Service : paciente_id
+        
+        opt payload.responsavel_nome não vazio
+            Service -> DB : INSERT INTO ResponsavelLegal (...)
+        end
+        
+        Service -> DB : INSERT INTO ConfiguracaoPaciente (...)
+        Service -> DB : INSERT INTO ConsentimentoPaciente (...)
+        
+        Service -> DB : tx.commit()
+        
+        Service -> Service : tokio::spawn(enviar_email_resend)
+        Service --> Handler : Result<Ok(paciente_id)>
     deactivate Service
     
-    Handler --> UI : 200 OK (Token JWT)
+    Handler --> Router : StatusCode::CREATED, JSON { "id": paciente_id }
 deactivate Handler
-
-UI -> User : Redireciona para /agendamentos.html
+Router --> UI : 201 Created
+UI -> User : Exibe sucesso e limpa formulário
 @enduml
 ```
 
-### 4.2 Fluxo de Novo Agendamento
+### 4.2 Marcar Agendamento
 
-Este diagrama detalha o processo de criação de um novo agendamento, acionado através da tela `agendamentos.html`.
+Este diagrama mapeia rigorosamente a lógica de negócio associada ao agendamento de consultas a partir da interface `agendamentos.html`.
 
 ```plantuml
 @startuml
@@ -62,34 +72,44 @@ skinparam sequence {
     ArrowColor DarkBlue
 }
 
-actor "Paciente / Usuário" as User
+actor "Paciente / Secretária" as User
 participant "agendamentos.html\n(Frontend)" as UI
-participant "Axum Handler\n(api::agendamento_handler)" as Handler
-participant "Service\n(services::agendamento_service)" as Service
-participant "Sqlx Repository\n(domain::agendamento_repo)" as Repo
-database "PostgreSQL" as DB
+participant "Axum Router\n(api::agendamento)" as Router
+participant "API Handler\n(create_agendamento_handler)" as Handler
+participant "Service\n(services::agendamento)" as Service
+database "PostgreSQL\n(PgPool)" as DB
 
-User -> UI : Clica em "Novo Agendamento" e preenche form
-UI -> Handler : POST /api/agendamentos (JSON + JWT)
+User -> UI : Seleciona data, horário, psicólogo e salva
+UI -> Router : POST http://localhost:3000/agendamentos/novo\n(JSON: CreateAgendamentoRequest)
+Router -> Handler : Delega para create_agendamento_handler
 activate Handler
-    Handler -> Handler : valida_auth_jwt()
-    Handler -> Service : criar_agendamento(payload)
+    Handler -> Service : criar_agendamento(&state.db, fk_paciente, fk_psicologo, data_hora, modalidade)
     activate Service
-        Service -> Service : aplicar_regras_negocio(disponibilidade)
+        opt modalidade == ModalidadeConsulta::Online
+            Service -> DB : SELECT crp, validador_epsi... FROM Psicologo WHERE fk_usuario_id = $1
+            DB --> Service : Option<Psicologo>
+            alt Psicologo não encontrado
+                Service --> Handler : Err(AgendamentoError::PsicologoNaoEncontrado)
+            else validador_epsi is None
+                Service --> Handler : Err(AgendamentoError::EpsiNaoValidado)
+            end
+        end
         
-        Service -> Repo : insert(agendamento)
-        activate Repo
-            Repo -> DB : INSERT INTO agendamentos (...) RETURNING id
-            DB --> Repo : ID do agendamento criado
-            Repo --> Service : Agendamento salvo
-        deactivate Repo
+        Service -> DB : SELECT id FROM Consulta WHERE fk_psicologo_id = $1 AND data_hora = $2 AND status != 'Cancelada'
+        DB --> Service : Option<i32> (conflito)
+        alt conflito.is_some()
+            Service --> Handler : Err(AgendamentoError::ConflitoHorario)
+        end
         
-        Service --> Handler : Result<Agendamento, Error>
+        Service -> DB : INSERT INTO Consulta (fk_paciente, fk_psicologo, data_hora, modalidade, status='Agendada')\nRETURNING *
+        DB --> Service : Consulta criada
+        
+        Service --> Handler : Result<Ok(Consulta)>
     deactivate Service
     
-    Handler --> UI : 201 Created (JSON)
+    Handler --> Router : StatusCode::CREATED, JSON(Consulta)
 deactivate Handler
-
+Router --> UI : 201 Created
 UI -> User : Atualiza tabela de agendamentos na tela
 @enduml
 ```

@@ -1,18 +1,19 @@
 use axum::{
-    extract::State,
+    extract::{State, Path},
     http::StatusCode,
     response::{IntoResponse, Response},
     Json,
-    routing::post,
+    routing::{get, post},
     Router,
 };
 use std::sync::Arc;
 use crate::api::auth::AppState;
-use crate::services::paciente::{cadastrar_paciente, CadastroPacienteRequest, PacienteError};
+use crate::services::paciente::{cadastrar_paciente, listar_pacientes, CadastroPacienteRequest, PacienteError};
 
 pub fn router(state: Arc<AppState>) -> Router {
     Router::new()
         .route("/novo", post(create_paciente_handler))
+        .route("/psicologos/{id}/pacientes", get(listar_pacientes_handler))
         .with_state(state)
 }
 
@@ -38,4 +39,12 @@ async fn create_paciente_handler(
     let paciente_id = cadastrar_paciente(&state.db, payload).await?;
 
     Ok((StatusCode::CREATED, Json(serde_json::json!({ "id": paciente_id }))))
+}
+
+async fn listar_pacientes_handler(
+    State(state): State<Arc<AppState>>,
+    Path(id): Path<i32>,
+) -> Result<impl IntoResponse, PacienteError> {
+    let pacientes = listar_pacientes(&state.db, id).await?;
+    Ok(Json(pacientes))
 }
