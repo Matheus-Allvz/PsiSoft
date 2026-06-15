@@ -30,7 +30,6 @@ yarn-error.log*
 /tests/auth-test/
 
 # Added by cargo
-Cargo.lock
 
 # Ignorando arquivos temporários do front e UI prototypes gerados na task de Backend
 /frontend/test_agendamento.html
