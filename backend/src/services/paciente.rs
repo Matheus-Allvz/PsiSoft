@@ -182,8 +182,7 @@ pub async fn listar_pacientes(
     pool: &PgPool,
     fk_psicologo_id: i32,
 ) -> Result<Vec<PacienteResponse>, PacienteError> {
-    let pacientes = sqlx::query_as!(
-        PacienteResponse,
+    let pacientes = sqlx::query_as::<_, PacienteResponse>(
         r#"
         SELECT p.id, p.nome, p.cpf, p.data_nascimento, p.telefone, u.email
         FROM Paciente p
