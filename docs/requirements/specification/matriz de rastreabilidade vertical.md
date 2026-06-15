@@ -1,0 +1,13 @@
+### Matriz de Rastreabilidade Vertical (PsiSoft)
+
+| Requisito Original | Descrição do Requisito | Componente Arquitetural (C3) | Módulos e Arquivos de Código Fonte (Rust) |
+| :--- | :--- | :--- | :--- |
+| **Base do Sistema** / **RNF-03** | Inicialização do sistema, roteamento, migrações de BD e garantia de disponibilidade. | Infraestrutura / Core | `src/main.rs` |
+| **RNF-01** / **RNF-02** | Criptografia de senhas e autenticação multi-fator (acesso). | API Auth + Services + Domain | `src/api/auth.rs`<br>`src/services/auth.rs`<br>`src/domain/user.rs` |
+| **Base do Sistema** | Cadastro de paciente, listagem vinculada ao psicólogo e envio de e-mail de boas-vindas. | API Paciente + Services (Integração) | `src/api/paciente.rs`<br>`src/services/paciente.rs`<br>`src/domain/paciente.rs`<br>`src/services/email.rs` |
+| **RF-03** e **RN-04** | Gestão de consentimento (TCLE) e obrigatoriedade de registro de responsável legal para pacientes menores de idade. | Services Paciente + Domain | `src/services/paciente.rs`<br>`src/domain/paciente.rs` |
+| **RF-04** | Agendamento autónomo: paciente acessa a agenda e marca consultas sem intermediação. | API Agendamento + Services + Domain | `src/api/agendamento.rs`<br>`src/services/agendamento.rs`<br>`src/domain/agendamento.rs` |
+| **RF-05** | Validação do registro no Cadastro e-Psi para autorização de atendimentos na modalidade online. | Services Agendamento + Domain User | `src/services/agendamento.rs`<br>`src/domain/user.rs` |
+| **RF-08** | Disponibilização de histórico organizado de consultas cadastradas. | API Agendamento + Services | `src/api/agendamento.rs`<br>`src/services/agendamento.rs` |
+| **RF-09** | Envio de lembretes automatizados e notificações (processamento assíncrono integrado via webhooks). | Camada Events (Tokio) + Services | `src/events/mod.rs`<br>`src/services/agendamento.rs`<br>`src/main.rs` |
+| **RF-16** | Cancelamento e remarcação ágil de consultas. | API Agendamento + Services + Domain | `src/api/agendamento.rs`<br>`src/services/agendamento.rs`<br>`src/domain/agendamento.rs` |
