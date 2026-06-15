@@ -189,9 +189,9 @@ pub async fn listar_pacientes(
         JOIN Usuario u ON p.fk_usuario_id = u.id
         WHERE p.fk_psicologo_id = $1
         ORDER BY p.nome ASC
-        "#,
-        fk_psicologo_id
+        "#
     )
+    .bind(fk_psicologo_id)
     .fetch_all(pool)
     .await?;
 
